@@ -4,6 +4,7 @@ clc
 
 %% Setup
 ds = 2; % 0: KITTI, 1: Malaga, 2: parking
+debug = true;
 
 if ds == 0
     % need to set kitti_path to folder containing "00" and "poses"
@@ -60,74 +61,18 @@ else
     assert(false);
 end
 
-%% Initialization of Pose and Landmarks
-
-% establish S data struct (cell)
-% Markovian idea: cell of information (denoted by S) is passed and updated continously,
-% computation of S(t+1) solely depends on S(t)
-% Cell struct S should contain: Keypoints (P), associated landmarks (X),
-% set of candidate keypoints (C), candidate first observation (F),
-% candidate first camera pose (T)
-% 
-% For the beginning, the VO pipeline can work with only the keypoints given by the initialization,
-% afterwards the method of triangulating new landmarks can be implemnted
-% (this requires C, F and T)
-
-% Second row can save values at prior timestep (indicated by _t0), while
-% first row saves values at current timestep (indicated by _t1) this is
-% needed for the computation of the relative scale factor
-
-% Therfore, the data struct does depend on two timesteps, the current and
-% the previous
-
-% Additionally, it holds the current pose, with repspect to the very
-% first frame. This pose is saved as [R, T] (3x4)
-
-%S = cell(2,6);
-%S = struct('P_t1',{},'X_t1',{},'C_t1',{})
-S.t1.P = zeros(1,1);
-S.t1.X = zeros(1,1);
-S.t1.C = zeros(1,1);
-S.t1.F = zeros(1,1);
-S.t1.T = zeros(1,1);
-S.t1.Pose = zeros(3,4);
-
-S.t0.P = zeros(1,1);
-S.t0.X = zeros(1,1);
-S.t0.C = zeros(1,1);
-S.t0.F = zeros(1,1);
-S.t0.T = zeros(1,1);
-S.t0.Pose = eye(3,4);
-
-%S(1:2,1:6) = {  P_t1,X_t1,C_t1,F_t1,T_t1, Pose_t1;...
-%                P_t0,X_t0,C_t0,F_t0,T_t0, Pose_t0};
-
-% 3.1 manually select two frames I_0 and I_1
-% this is done in the Bootstrap part, when introducing the 'bootstap_frames' vector
-    
-% 3.2 Establish keypoint correspondences
-
-% rescale factor for image processing (must be 1 for HARRIS)
-rescale = 1;
-
-% keypoint correspondences can be establisht either with HARRIS or SIFT
-S = establishKptCorrespondencesHARRIS(S, img0, img1, rescale);
-
-% 3.3 Relative pose estimation and triangulation of landmarks, use RANSAC 
-S = estimaterelativePose(S, K);
-
-% optional: fit first Pose to initial goundtruth pos, to recover unknown
-% scale factor
-% S{1,6}(1:3,4)=S{1,6}(1:3,4)*ground_truth(bootstrap_frames(2)+1,1)
+%Bootstrapping 
+S = bootstrap(img0,img1,K);
     
 % Debug plot results
 debug = true;
 if (debug == true)
-    debugplot(S, img0, img1)
+    debugplot(S, img0, img1)   
+    disp('Position estimate after initialization:')
+    disp(S.t1.Pose)
 end
 
-disp('Position estimate after initialization:')
-disp(S.t1.Pose)
+
 
 %% Continuous operation
 
@@ -136,26 +81,20 @@ range = (bootstrap_frames(2)+1):last_frame;
 % possible only take every xth frame (right now every second)
 %range = range(1):2:range(end);
 
+%create matlab klt point tracker with parameters below
 r_T = 20;
 bs = 2*r_T+1;
 num_iters = 50;
-
 lambda = 1;
 
-%create matlab klt point tracker
 pointTracker = vision.PointTracker('NumPyramidLevels',1, ...
         'MaxBidirectionalError',lambda,'BlockSize',[bs,bs],'MaxIterations',num_iters);
 
-%image for initialization
-image = img1;
+%take second bootstrap image for initialization
+prev_image = img1;
 
+%iterate through all frames from video
 for i = range
-    
-    %flip to get x,y
-    keypoints = fliplr(S.t1.P);
-    
-    %initialize pointtracker
-    initialize(pointTracker,keypoints,image);
     
     fprintf('\n\nProcessing frame %d\n=====================\n', i);
     if ds == 0
@@ -171,62 +110,22 @@ for i = range
         assert(false);
     end
     
-    % if first interation, use last bootstrap picture
-    if (i == range(1))
-        %load last picture used for bootstrap
-        prev_image = im2uint8(rgb2gray(imread([parking_path ...
-        sprintf('/images/img_%05d.png',bootstrap_frames(2))])));
-    end
-    
-    % new timestep, therefore update S
-    S.t0 = S.t1;
+    %Do tracking from last to new frame
+    [S,running] = continous_tracking(pointTracker,S,prev_image,image,K);
 
-    %point tracking
-    [keypoints,keep] = pointTracker(image);
-    
-    %flip to get y,x
-    S.t1.P = fliplr(keypoints);
-    
-    %release point tracker, such that keypoints are only used from frame to
-    %frame
-    release(pointTracker);
-    
-    disp(['Points that were tracked: ',num2str(length(keep(keep>0)))])
-    S.t1.P = double(round(S.t1.P(find(keep>0),:)));
-    
-    % delete keypoints and landmarkes that are discarded
-    S.t0.P = S.t0.P(find(keep>0),:);
-    S.t0.X = S.t0.X(find(keep>0),:);
-
-    % break here if less than 15 keypoints are tracked
-    if length(keep(keep>0))<15
-        disp('Less than 15 keypoints tracked, execution stopped')
+    %Check if enough features are available
+    if(~running)
         break
     end
-    
-    %Calculate pose
-    S = estimaterelativePose(S, K);
-    
-    % attempt to recover scale factor
-    %recover scaling factor
-    %diff_old = diff(S{2,2});
-    %diff_new = diff(S{1,2});
-    %distances_old = sqrt(sum(diff_old.^2,2));
-    %distances_new = sqrt(sum(diff_new.^2,2));
-    %median_scale = median(distances_old./distances_new)
-    %S{1,6}(1:3,4) =  S{1,6}(1:3,4)*median_scale;
-    %S{1,6}
-    %Position(:,i) = S{2,6}(1:3,4)+S{1,6}(1:3,4);
-    
-    disp('Current pose:')
-    disp(S.t1.Pose)
-    
+   
     % debug
-    debug = true;
     if (debug==true)
         debugplot(S, prev_image,image)
+        disp('Current pose:')
+        disp(S.t1.Pose)
     end
     pause(0.1);
+    
     % set previous image to current image, needed for next iteration
     prev_image = image;
     
