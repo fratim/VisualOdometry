@@ -86,8 +86,8 @@ close all
 range = (bootstrap_frames(2)+1):last_frame;
 % possible only take every xth frame (right now every second)
 %range = range(1):2:range(end);
-start = range(1)
-range = [start, start + 1, start + 2, start + 4, start + 5, start + 7, start + 8, start + 9]
+%start = range(1)
+%range = [start, start + 1, start + 2, start + 4, start + 5, start + 7, start + 8, start + 9]
 %create matlab klt point tracker with parameters below
 r_T = 20;
 bs = 2*r_T+1;
