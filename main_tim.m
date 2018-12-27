@@ -83,24 +83,24 @@ end
 % Additionally, it holds the current pose, with repspect to the very
 % first frame. This pose is saved as [R, T] (3x4)
 
-S = cell(2,6);
+%S = cell(2,6);
+%S = struct('P_t1',{},'X_t1',{},'C_t1',{})
+S.t1.P = zeros(1,1);
+S.t1.X = zeros(1,1);
+S.t1.C = zeros(1,1);
+S.t1.F = zeros(1,1);
+S.t1.T = zeros(1,1);
+S.t1.Pose = zeros(3,4);
 
-P_t1 = zeros(1,1);
-X_t1 = zeros(1,1);
-C_t1 = zeros(1,1);
-F_t1 = zeros(1,1);
-T_t1 = zeros(1,1);
-Pose_t1 = zeros(3,4);
+S.t0.P = zeros(1,1);
+S.t0.X = zeros(1,1);
+S.t0.C = zeros(1,1);
+S.t0.F = zeros(1,1);
+S.t0.T = zeros(1,1);
+S.t0.Pose = eye(3,4);
 
-P_t0 = zeros(1,1);
-X_t0 = zeros(1,1);
-C_t0 = zeros(1,1);
-F_t0 = zeros(1,1);
-T_t0 = zeros(1,1);
-Pose_t0 = eye(3,4);
-
-S(1:2,1:6) = {  P_t1,X_t1,C_t1,F_t1,T_t1, Pose_t1;...
-                P_t0,X_t0,C_t0,F_t0,T_t0, Pose_t0};
+%S(1:2,1:6) = {  P_t1,X_t1,C_t1,F_t1,T_t1, Pose_t1;...
+%                P_t0,X_t0,C_t0,F_t0,T_t0, Pose_t0};
 
 % 3.1 manually select two frames I_0 and I_1
 % this is done in the Bootstrap part, when introducing the 'bootstap_frames' vector
@@ -127,7 +127,7 @@ if (debug == true)
 end
 
 disp('Position estimate after initialization:')
-disp(S{1,6})
+disp(S.t1.Pose)
 
 %% Continuous operation
 
@@ -162,18 +162,19 @@ for i = range
     end
     
     % new timestep, theefore update S
-    S(2,:) = S(1,:);
-    S(1,1:6) = {P_t1,X_t1,C_t1,F_t1,T_t1, Pose_t1};
+    S.t0 = S.t1;
+    
+    %S(1,1:6) = {P_t1,X_t1,C_t1,F_t1,T_t1, Pose_t1};
     
     % flip to meet x y convention
-    keypoints = flipud(S{2,1}');
+    keypoints = flipud(S.t0.P');
     r_T = 15;
     num_iters = 50;
-    dkp = zeros(2,size(S{2,1},1));
-    keep = zeros(1,size(S{2,1},1));
+    dkp = zeros(2,size(S.t0.P,1));
+    keep = zeros(1,size(S.t0.P,1));
     lambda = 2;
     
-    for j = 1:size(S{2,1},1)
+    for j = 1:size(S.t0.P,1)
         [W, keep(j)] = trackKLTRobustly(prev_image, image, keypoints(:,j)', r_T, num_iters, lambda);
         dkp(:, j) = W(:, end);
     end
@@ -181,18 +182,18 @@ for i = range
     dkpuv = flipud(dkp);
     
     % new keypoints = old kpts + distance
-    S{1,1} = S{2,1}+dkpuv';
+    S.t1.P = S.t0.P+dkpuv';
     
     % discard values with NaN return, if not already discarded
     NaNidx = find(isnan(dkpuv(1,:)));
     keep(NaNidx)=0;
     
     disp(['Points that were tracked: ',num2str(length(keep(keep>0)))])
-    S{1,1} = double(round(S{1,1}(find(keep>0),:)));
+    S.t1.P = double(round(S.t1.P(find(keep>0),:)));
     
     % delete keypoints and landmarkes that are discarded
-    S{2,1} = S{2,1}(find(keep>0),:);
-    S{2,2} = S{2,2}(find(keep>0),:);
+    S.t0.P = S.t0.P(find(keep>0),:);
+    S.t0.X = S.t0.X(find(keep>0),:);
 
     % break here if less than 15 keypoints are tracked
     if length(keep(keep>0))<15
@@ -214,7 +215,7 @@ for i = range
     %Position(:,i) = S{2,6}(1:3,4)+S{1,6}(1:3,4);
     
     disp('Current pose:')
-    disp(S{1,6})
+    disp(S.t1.Pose)
     
     % debug
     debug = true;

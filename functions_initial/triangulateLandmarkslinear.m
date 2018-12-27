@@ -1,13 +1,13 @@
 function S = triangulateLandmarkslinear(S, K)
 
-    pt1 = [S{2,1}'; ones(1,length(S{2,1}))];
-    pt2 = [S{1,1}'; ones(1,length(S{1,1}))];
+    pt1 = [S.t0.P'; ones(1,length(S.t0.P))];
+    pt2 = [S.t1.P'; ones(1,length(S.t1.P))];
     
-    Mt1 = K*S{2,6};
-    Mt2 = K*S{1,6};
+    Mt1 = K*S.t0.Pose;
+    Mt2 = K*S.t1.Pose;
     
     P = linearTriangulation(pt1,pt2,Mt1,Mt2);
-    S{1,2} = P(1:3,:)';
+    S.t1.X = P(1:3,:)';
     
 
 end
