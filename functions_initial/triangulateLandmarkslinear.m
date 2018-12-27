@@ -7,7 +7,6 @@ function S = triangulateLandmarkslinear(S, K)
     Mt2 = K*S.t1.Pose;
     
     P = linearTriangulation(pt1,pt2,Mt1,Mt2);
-    S.t1.X = P(1:3,:)';
-    
+    S.t1.X = P(1:3,:)';    
 
 end

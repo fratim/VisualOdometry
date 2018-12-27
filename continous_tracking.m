@@ -1,4 +1,4 @@
-function [S,running] = continous_tracking(pointTracker,S,prev_image,image,K)
+function [S,running, scale_fac] = continous_tracking(pointTracker,S,prev_image,image,K, scale_fac)
     running = true;
     %flip to get x,y
     keypoints = fliplr(S.t1.P);
@@ -32,16 +32,6 @@ function [S,running] = continous_tracking(pointTracker,S,prev_image,image,K)
     end
     
     %Calculate pose
-    S = estimaterelativePose(S, K);
+    S = estimaterelativePose_ML(S,K,0);
     
-    % attempt to recover scale factor
-    %recover scaling factor
-    %diff_old = diff(S{2,2});
-    %diff_new = diff(S{1,2});
-    %distances_old = sqrt(sum(diff_old.^2,2));
-    %distances_new = sqrt(sum(diff_new.^2,2));
-    %median_scale = median(distances_old./distances_new)
-    %S{1,6}(1:3,4) =  S{1,6}(1:3,4)*median_scale;
-    %S{1,6}
-    %Position(:,i) = S{2,6}(1:3,4)+S{1,6}(1:3,4);
 end

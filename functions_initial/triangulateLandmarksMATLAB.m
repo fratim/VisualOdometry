@@ -1,27 +1,28 @@
-function S = triangulateLandmarksMATLAB(S, K)
+function S = triangulateLandmarksMATLAB(S,K,R,T, isBoot)
 
 
     % K inverse to meet matlab convention
     cameraParams = cameraParameters('IntrinsicMatrix',K');
     stereoParams = stereoParameters(cameraParams,cameraParams,...
-                                    S{1,6}(1:3,1:3),S{1,6}(1:3,4));
+                                    R,T);
     
-    pt1 = S{2,1};
-    pt2 = S{1,1};
+    ptold = fliplr(S.t0.P);
+    ptnew = fliplr(S.t1.P);
     
-    [worldP,reprojectionErrors] = triangulate(pt1,pt2,stereoParams);
+    [worldP,reprojectionErrors] = triangulate(ptold,ptnew,stereoParams);
     
     %attempt: discard landmarks and according keypoitns, if reprojection
     %error is large (is this in pixels?) just trying with 1, looks fine
     %problem: some points are still projected behind the damn camera
     
-    idx_keep = find(reprojectionErrors<2);
+    idx_keep = find(reprojectionErrors<0.25);
     worldP = worldP(idx_keep,:);
     
-    %discard according feature points
-    S{1,1} = S{1,1}(idx_keep,:);
-    S{2,1} = S{2,1}(idx_keep,:);
-    
-    
-    S{1,2} = worldP;
+    % discard according feature points and landmarks
+    S.t0.P = S.t0.P(idx_keep,:);
+    S.t1.P = S.t1.P(idx_keep,:);
+    if (isBoot == false)
+        S.t0.X = S.t0.X(idx_keep,:);
+    end
+    S.t1.X = worldP;
 end

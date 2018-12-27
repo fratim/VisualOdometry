@@ -52,5 +52,5 @@ rescale = 1;
 S = establishKptCorrespondencesHARRIS(S, img0, img1, rescale);
 
 % 3.3 Relative pose estimation and triangulation of landmarks, use RANSAC 
-S = estimaterelativePose(S, K);
+S = estimaterelativePose_ML(S,K,1);
 end

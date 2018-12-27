@@ -12,7 +12,7 @@ function S = estimaterelativePose(S, K)
 
     kpt_matched_t1 = [transpose(S.t0.P(:,:));ones(1,length(S.t0.P(:,:)))];
     kpt_matched_t2 = [transpose(S.t1.P(:,:));ones(1,length(S.t1.P(:,:)))];
-    
+
     M0=K*S.t0.Pose;
     [R,T] = disambiguateRelativePose(Rots,u3,kpt_matched_t1,kpt_matched_t2,K,K,M0);
     

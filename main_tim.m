@@ -63,7 +63,13 @@ end
 
 %Bootstrapping 
 S = bootstrap(img0,img1,K);
-    
+
+% debug mode: get rescale factor from groundtruth
+% fit estimated pose to groundtruth, to recover scale factor
+% if (debug == true)
+%    S.t1.Pose(1:3,4) = S.t1.Pose(1:3,4)*ground_truth(bootstrap_frames(2)+4,1);
+% end
+
 % Debug plot results
 debug = true;
 if (debug == true)
@@ -80,7 +86,8 @@ close all
 range = (bootstrap_frames(2)+1):last_frame;
 % possible only take every xth frame (right now every second)
 %range = range(1):2:range(end);
-
+start = range(1)
+range = [start, start + 1, start + 2, start + 4, start + 5, start + 7, start + 8, start + 9]
 %create matlab klt point tracker with parameters below
 r_T = 20;
 bs = 2*r_T+1;
@@ -110,10 +117,10 @@ for i = range
         assert(false);
     end
     
-    %Do tracking from last to new frame
+    % Do tracking from last to new frame
     [S,running] = continous_tracking(pointTracker,S,prev_image,image,K);
 
-    %Check if enough features are available
+    % Check if enough features are available
     if(~running)
         break
     end
