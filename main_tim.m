@@ -136,22 +136,27 @@ range = (bootstrap_frames(2)+1):last_frame;
 % possible only take every xth frame (right now every second)
 %range = range(1):2:range(end);
 
-%keypoints = flipud(S.t0.P');
-r_T = 15;
+r_T = 20;
 bs = 2*r_T+1;
 num_iters = 50;
-%dkp = zeros(2,size(S.t0.P,1));
-%keep = zeros(1,size(S.t0.P,1));
-lambda = 3;
 
-pointTracker = vision.PointTracker('NumPyramidLevels',3, ...
+lambda = 1;
+
+%create matlab klt point tracker
+pointTracker = vision.PointTracker('NumPyramidLevels',1, ...
         'MaxBidirectionalError',lambda,'BlockSize',[bs,bs],'MaxIterations',num_iters);
-%initialize(pointTracker,S.t1.P,img1);
+
+%image for initialization
 image = img1;
+
 for i = range
-    %S.t1.P = flipud(S.t1.P);
-    keypoints = flipud(S.t1.P);
+    
+    %flip to get x,y
+    keypoints = fliplr(S.t1.P);
+    
+    %initialize pointtracker
     initialize(pointTracker,keypoints,image);
+    
     fprintf('\n\nProcessing frame %d\n=====================\n', i);
     if ds == 0
         image = imread([kitti_path '/00/image_0/' sprintf('%06d.png',i)]);
@@ -166,9 +171,6 @@ for i = range
         assert(false);
     end
     
-    % Makes sure that plots refresh.    
-    pause(5);
-    
     % if first interation, use last bootstrap picture
     if (i == range(1))
         %load last picture used for bootstrap
@@ -178,29 +180,17 @@ for i = range
     
     % new timestep, therefore update S
     S.t0 = S.t1;
-    
-    %S(1,1:6) = {P_t1,X_t1,C_t1,F_t1,T_t1, Pose_t1};
-    
-    % flip to meet x y convention
 
-    
-    %for j = 1:size(S.t0.P,1)
-    %    [W, keep(j)] = trackKLTRobustly(prev_image, image, keypoints(:,j)', r_T, num_iters, lambda);
-    %    dkp(:, j) = W(:, end);
-    %end
-    
-    %dkpuv = flipud(dkp);
-    
-    % new keypoints = old kpts + distance
-    %S.t1.P = S.t0.P+dkpuv';
-    
-    % discard values with NaN return, if not already discarded
-    %NaNidx = find(isnan(dkpuv(1,:)));
-    %keep(NaNidx)=0;
-    
+    %point tracking
     [keypoints,keep] = pointTracker(image);
-    S.t1.P = flipud(keypoints);
+    
+    %flip to get y,x
+    S.t1.P = fliplr(keypoints);
+    
+    %release point tracker, such that keypoints are only used from frame to
+    %frame
     release(pointTracker);
+    
     disp(['Points that were tracked: ',num2str(length(keep(keep>0)))])
     S.t1.P = double(round(S.t1.P(find(keep>0),:)));
     
@@ -214,6 +204,7 @@ for i = range
         break
     end
     
+    %Calculate pose
     S = estimaterelativePose(S, K);
     
     % attempt to recover scale factor
@@ -235,7 +226,7 @@ for i = range
     if (debug==true)
         debugplot(S, prev_image,image)
     end
-    
+    pause(0.1);
     % set previous image to current image, needed for next iteration
     prev_image = image;
     

@@ -4,7 +4,7 @@ function S = estimaterelativePose(S, K)
     % mode
     [F,inliersIndex,status] = estimateFundamentalMatrix(fliplr(S.t0.P(:,:)),...
     fliplr(S.t1.P(:,:)),'Method','RANSAC',...
-    'NumTrials',100000,'DistanceThreshold',0.001,'InlierPercentage',90,'Confidence',99.99);
+    'NumTrials',100000,'DistanceThreshold',0.001,'InlierPercentage',80,'Confidence',99.99);
 
     %calculate essential Matrix E
     E = K'*F*K;
