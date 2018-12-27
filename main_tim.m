@@ -134,9 +134,24 @@ disp(S.t1.Pose)
 close all
 range = (bootstrap_frames(2)+1):last_frame;
 % possible only take every xth frame (right now every second)
-range = range(1):2:range(end);
+%range = range(1):2:range(end);
 
+%keypoints = flipud(S.t0.P');
+r_T = 15;
+bs = 2*r_T+1;
+num_iters = 50;
+%dkp = zeros(2,size(S.t0.P,1));
+%keep = zeros(1,size(S.t0.P,1));
+lambda = 3;
+
+pointTracker = vision.PointTracker('NumPyramidLevels',3, ...
+        'MaxBidirectionalError',lambda,'BlockSize',[bs,bs],'MaxIterations',num_iters);
+%initialize(pointTracker,S.t1.P,img1);
+image = img1;
 for i = range
+    %S.t1.P = flipud(S.t1.P);
+    keypoints = flipud(S.t1.P);
+    initialize(pointTracker,keypoints,image);
     fprintf('\n\nProcessing frame %d\n=====================\n', i);
     if ds == 0
         image = imread([kitti_path '/00/image_0/' sprintf('%06d.png',i)]);
@@ -152,7 +167,7 @@ for i = range
     end
     
     % Makes sure that plots refresh.    
-    pause(0.01);
+    pause(5);
     
     % if first interation, use last bootstrap picture
     if (i == range(1))
@@ -161,33 +176,31 @@ for i = range
         sprintf('/images/img_%05d.png',bootstrap_frames(2))])));
     end
     
-    % new timestep, theefore update S
+    % new timestep, therefore update S
     S.t0 = S.t1;
     
     %S(1,1:6) = {P_t1,X_t1,C_t1,F_t1,T_t1, Pose_t1};
     
     % flip to meet x y convention
-    keypoints = flipud(S.t0.P');
-    r_T = 15;
-    num_iters = 50;
-    dkp = zeros(2,size(S.t0.P,1));
-    keep = zeros(1,size(S.t0.P,1));
-    lambda = 2;
+
     
-    for j = 1:size(S.t0.P,1)
-        [W, keep(j)] = trackKLTRobustly(prev_image, image, keypoints(:,j)', r_T, num_iters, lambda);
-        dkp(:, j) = W(:, end);
-    end
+    %for j = 1:size(S.t0.P,1)
+    %    [W, keep(j)] = trackKLTRobustly(prev_image, image, keypoints(:,j)', r_T, num_iters, lambda);
+    %    dkp(:, j) = W(:, end);
+    %end
     
-    dkpuv = flipud(dkp);
+    %dkpuv = flipud(dkp);
     
     % new keypoints = old kpts + distance
-    S.t1.P = S.t0.P+dkpuv';
+    %S.t1.P = S.t0.P+dkpuv';
     
     % discard values with NaN return, if not already discarded
-    NaNidx = find(isnan(dkpuv(1,:)));
-    keep(NaNidx)=0;
+    %NaNidx = find(isnan(dkpuv(1,:)));
+    %keep(NaNidx)=0;
     
+    [keypoints,keep] = pointTracker(image);
+    S.t1.P = flipud(keypoints);
+    release(pointTracker);
     disp(['Points that were tracked: ',num2str(length(keep(keep>0)))])
     S.t1.P = double(round(S.t1.P(find(keep>0),:)));
     
