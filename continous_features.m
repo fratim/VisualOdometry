@@ -10,16 +10,42 @@ function S_data = continous_features(S_data, img, rescale, K)
 
     [features,valid_points] = extractFeatures(img,points_new);
     
+    
     if(~isempty(S_data.t1.F))
         %Match the features.
+        %[key_features,key_valid_points] = extractFeatures(img,fliplr(S_data.t1.P),'Method','FREAK');
+        
+        %usedPairs = matchFeatures(features,key_features,'MatchThreshold',5,'Unique',false);
+        %a = (round(valid_points.Location(:,1))==round(S_data.t1.P(:,2)));
+        %b = (round(valid_points.Location(:,2))==round(S_data.t1.P(:,1)));
+        %used_set = find(a==b);
+        %p = mat2cell(valid_points.Location,[size(valid_points.Location,1)],[size(valid_points.Location,2)]);
+        %d = mat2cell(fliplr(S_data.t1.P),[size(S_data.t1.P,1)],[size(S_data.t1.P,2)]);
+        %used_set = ismembertol(p,d,1);
+        a = round(valid_points.Location);
+        b = round(fliplr(S_data.t1.P));
+        used_set = ismembertol(a,b,'ByRows',2);
+        %used_set = used_set(:,1)+used_set(:,2);
+        unused_set = find(used_set==0);
+        %unused_set = setdiff(1:size(valid_points.Location,1),used_set);
+        features = features.Features(unused_set,:);
+        features2 = features;
+        valid_points = valid_points.Location(unused_set,:);
+        
+        features = binaryFeatures(features);
         features_old = binaryFeatures(S_data.t1.F);
         indexPairs = matchFeatures(features,features_old,'MatchThreshold',15,'Unique',true);
-
+        
+        
         %Retrieve the locations of the corresponding points for each image.
         matchedPoints_new = valid_points(indexPairs(:,1),:);
-        matchedPoints_new = double(round(fliplr(matchedPoints_new.Location)));
+        matchedPoints_new = double(round(fliplr(matchedPoints_new)));
         matchedPoints_old = S_data.t1.C(indexPairs(:,2),:);
-
+        
+        [~, ind]= unique(S_data.t1.P, 'rows');
+        if(size(ind,1)~=size(S_data.t1.P,1))
+            disp('HOOOOSSSSAA222')
+        end
         %Check the angle criterium
         for i=1:size(indexPairs(:,1),1)
             p1 = matchedPoints_old(i,:);
@@ -40,7 +66,10 @@ function S_data = continous_features(S_data, img, rescale, K)
             end
             
         end
-
+        [~, ind]= unique(S_data.t1.P, 'rows');
+        if(size(ind,1)~=size(S_data.t1.P,1))
+            disp('HOOOOSSSSAA333')
+        end
 
         %Remove lost features
         S_data.t1.F = S_data.t1.F(indexPairs(:,2),:);
@@ -48,11 +77,16 @@ function S_data = continous_features(S_data, img, rescale, K)
         S_data.t1.T = S_data.t1.T(indexPairs(:,2),:);
 
         %Add new Features that were not matched with old ones
-        new_feat_ind = setdiff(1:size(valid_points.Location,1),indexPairs(:,1));
+        new_feat_ind = setdiff(1:size(valid_points,1),indexPairs(:,1));
         S_data.t1.F = [S_data.t1.F;features.Features(new_feat_ind,:)];
-        S_data.t1.C = [S_data.t1.C;valid_points.Location(new_feat_ind,:)];
+        S_data.t1.C = [S_data.t1.C;valid_points(new_feat_ind,:)];
         T_add = repmat(reshape(S_data.t1.Pose,[1,12]),size(new_feat_ind,2),1);
         S_data.t1.T = [S_data.t1.T;T_add];
+        
+        [~, ind]= unique(S_data.t1.P, 'rows');
+        if(size(ind,1)~=size(S_data.t1.P,1))
+            disp('HOOOOSSSSAA3333')
+        end
       
     %Initial features
     else
