@@ -27,6 +27,11 @@ function [S,running, scale_fac] = continous_tracking(pointTracker,S,prev_image,i
         disp('HOOOOSSSSAA22222')
     end
     
+    % check if keypoints are close together, incase delete them
+    % how to choose, which keypoint to delete, if they are close together?
+    
+    [S, keep] = deletecloseFt(S, keep); 
+    
     disp(['Points that were tracked: ',num2str(length(keep(keep>0)))])
     S.t1.P = double(S.t1.P(find(keep>0),:));
     

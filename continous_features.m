@@ -1,6 +1,8 @@
 function S_data = continous_features(S_data, img, K)
     
+    %load parameters, given in this script
     run ParkingParameters.m
+    
     points_new = detectHarrisFeatures(img,'MinQuality',HrQuality,'FilterSize',HrKernel);
     
     img = imresize(img, HrScale);
@@ -12,24 +14,12 @@ function S_data = continous_features(S_data, img, K)
     valid_points.Location = valid_points.Location./HrScale;
 
     if(~isempty(S_data.t1.F))
-        %Match the features.
-        %[key_features,key_valid_points] = extractFeatures(img,fliplr(S_data.t1.P),'Method','FREAK');
-        
-        %usedPairs = matchFeatures(features,key_features,'MatchThreshold',5,'Unique',false);
-        %a = (round(valid_points.Location(:,1))==round(S_data.t1.P(:,2)));
-        %b = (round(valid_points.Location(:,2))==round(S_data.t1.P(:,1)));
-        %used_set = find(a==b);
-        %p = mat2cell(valid_points.Location,[size(valid_points.Location,1)],[size(valid_points.Location,2)]);
-        %d = mat2cell(fliplr(S_data.t1.P),[size(S_data.t1.P,1)],[size(S_data.t1.P,2)]);
-        %used_set = ismembertol(p,d,1);
-        a = round(valid_points.Location);
-        b = round(fliplr(S_data.t1.P));
+
+        a = round(valid_points.Location./2);
+        b = round(fliplr(S_data.t1.P)./2);
         used_set = ismembertol(a,b,'ByRows',2);
-        %used_set = used_set(:,1)+used_set(:,2);
         unused_set = find(used_set==0);
-        %unused_set = setdiff(1:size(valid_points.Location,1),used_set);
         features = features.Features(unused_set,:);
-        features2 = features;
         valid_points = valid_points.Location(unused_set,:);
         
         features = binaryFeatures(features);

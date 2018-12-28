@@ -12,10 +12,17 @@ function debugplot(S, imga, imgb)
 
     subplot(2,2,2)
     imshow(imgb)
+    %plot matches
     hold on
     scatter(S.t1.P(pplot,2),S.t1.P(pplot,1),'blue')
     title('img1 matched features')
-
+    if(~isempty(S.t1.C))
+        %plot candidates, these are saved as x y and not u v, this should
+        %be changed
+        hold on
+        scatter(S.t1.C(:,1),S.t1.C(:,2),'green','x')
+    end
+    
     subplot(2,2,3)
     scatter3(S.t1.X(pplot,1),S.t1.X(pplot,2),S.t1.X(pplot,3),'blue')
     title('world points')
