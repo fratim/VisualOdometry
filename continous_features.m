@@ -28,20 +28,25 @@ function S_data = continous_features(S_data, img, K)
 
         %Retrieve the locations of the corresponding points for each image.
         matchedPoints_new = valid_points(indexPairs(:,1),:);
-        matchedPoints_new = double(fliplr(matchedPoints_new));
+        matchedPoints_new = double(matchedPoints_new);
         matchedPoints_old = S_data.t1.C(indexPairs(:,2),:);
         
         [~, ind]= unique(S_data.t1.P, 'rows');
         if(size(ind,1)~=size(S_data.t1.P,1))
             disp('HOOOOSSSSAA222')
         end
+        
+        newfeatures = 0;
         %Check the angle criterium
         for i=1:size(indexPairs(:,1),1)
-            p1 = matchedPoints_old(i,:);
+            p1 = double(matchedPoints_old(i,:));
             p2 = matchedPoints_new(i,:);
             P1 = reshape(S_data.t1.T(i,:),[3,4]);
             P2 = S_data.t1.Pose;
             X = triangulateNewLandmarklinear(p1,p2,P1,P2,K);
+            if(isempty(X))
+                continue
+            end
             %Cosine rule
             a = norm(P1(1:3,4)-P2(1:3,4));
             b = norm(P1(1:3,4)-X);
@@ -49,12 +54,15 @@ function S_data = continous_features(S_data, img, K)
             alpha = acos((a*a -b*b -c*c)/(-2*b*c));
             
             %Add features that fulfill criterium
-            if(abs(alpha)>3/180 * pi)
-                S_data.t1.P = [S_data.t1.P;p2];
+            %if(abs(alpha)>3/180 * pi)
+                S_data.t1.P = [S_data.t1.P;fliplr(p2)];
                 S_data.t1.X = [S_data.t1.X;X];
-            end
+                newfeatures = newfeatures + 1;
+            %end
             
         end
+        
+        disp(num2str(newfeatures)+" new features added")
         [~, ind]= unique(S_data.t1.P, 'rows');
         if(size(ind,1)~=size(S_data.t1.P,1))
             disp('HOOOOSSSSAA333')
