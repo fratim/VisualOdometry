@@ -5,6 +5,9 @@ addpath(genpath('.'));
 %% Setup
 ds = 2; % 0: KITTI, 1: Malaga, 2: parking
 debug = true;
+kitti_path = 'kitti';
+malaga_path = 'malaga-urban-dataset-extract-07';
+parking_path = 'parking';
 
 if ds == 0
     % need to set kitti_path to folder containing "00" and "poses"
@@ -27,7 +30,6 @@ elseif ds == 1
         0 0 1];
 elseif ds == 2
     % Path containing images, depths and all...
-    parking_path = './parking';
     assert(exist('parking_path', 'var') ~= 0);
     last_frame = 598;
     K = load([parking_path '/K.txt']);
@@ -40,11 +42,13 @@ end
 %% Bootstrap
 % need to set bootstrap_frames
 if ds == 0
+    bootstrap_frames = [0,4];
     img0 = imread([kitti_path '/00/image_0/' ...
         sprintf('%06d.png',bootstrap_frames(1))]);
     img1 = imread([kitti_path '/00/image_0/' ...
         sprintf('%06d.png',bootstrap_frames(2))]);
 elseif ds == 1
+    bootstrap_frames = [0,4];
     img0 = rgb2gray(imread([malaga_path ...
         '/malaga-urban-dataset-extract-07_rectified_800x600_Images/' ...
         left_images(bootstrap_frames(1)).name]));
