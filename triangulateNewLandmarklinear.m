@@ -17,6 +17,6 @@ function X = triangulateNewLandmarklinear(p1,p2,P1,P2,K)
     %problem: some points are still projected behind the damn camera
     
     idx_keep = find(reprojectionErrors<0.25);
-    X= worldP(idx_keep,:);
+    X = worldP(idx_keep,:);
 
 end
