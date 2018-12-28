@@ -34,4 +34,6 @@ function [S,running, scale_fac] = continous_tracking(pointTracker,S,prev_image,i
     %Calculate pose
     S = estimaterelativePose_ML(S,K,0);
     
+    %Get new features
+    S = continous_features(S, image, 1, K);
 end

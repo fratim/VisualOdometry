@@ -25,16 +25,16 @@ function S =  bootstrap(img0, img1, K)%% Initialization of Pose and Landmarks
 %S = struct('P_t1',{},'X_t1',{},'C_t1',{})
 S.t1.P = zeros(1,1);
 S.t1.X = zeros(1,1);
-S.t1.C = zeros(1,1);
-S.t1.F = zeros(1,1);
-S.t1.T = zeros(1,1);
+S.t1.C = [];
+S.t1.F = [];
+S.t1.T = [];
 S.t1.Pose = zeros(3,4);
 
 S.t0.P = zeros(1,1);
 S.t0.X = zeros(1,1);
-S.t0.C = zeros(1,1);
-S.t0.F = zeros(1,1);
-S.t0.T = zeros(1,1);
+S.t0.C = [];
+S.t0.F = [];
+S.t0.T = [];
 S.t0.Pose = eye(3,4);
 
 %S(1:2,1:6) = {  P_t1,X_t1,C_t1,F_t1,T_t1, Pose_t1;...

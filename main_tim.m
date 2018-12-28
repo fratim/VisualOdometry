@@ -1,7 +1,7 @@
 clear all
 close all
 clc
-
+addpath(genpath('.'));
 %% Setup
 ds = 2; % 0: KITTI, 1: Malaga, 2: parking
 debug = true;
