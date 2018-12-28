@@ -3,10 +3,6 @@ function [S,running, scale_fac] = continous_tracking(pointTracker,S,prev_image,i
     %flip to get x,y
     keypoints = fliplr(S.t1.P);
     
-    [~, ind]= unique(S.t1.P, 'rows');
-        if(size(ind,1)~=size(S.t1.P,1))
-            disp('HOOOOSSSSAA1111')
-        end
     %initialize pointtracker
     initialize(pointTracker,keypoints,prev_image);
     % new timestep, therefore update S
@@ -22,11 +18,6 @@ function [S,running, scale_fac] = continous_tracking(pointTracker,S,prev_image,i
     %frame
     release(pointTracker);
     
-    [~, ind]= unique(S.t1.P, 'rows');
-    if(size(ind,1)~=size(S.t1.P,1))
-        disp('HOOOOSSSSAA22222')
-    end
-    
     % check if keypoints are close together, incase delete them
     % how to choose, which keypoint to delete, if they are close together?
     
@@ -35,10 +26,6 @@ function [S,running, scale_fac] = continous_tracking(pointTracker,S,prev_image,i
     disp(['Points that were tracked: ',num2str(length(keep(keep>0)))])
     S.t1.P = double(S.t1.P(find(keep>0),:));
     
-    [~, ind]= unique(S.t1.P, 'rows');
-    if(size(ind,1)~=size(S.t1.P,1))
-        disp('HOOOOSSSSAA33333')
-    end
     
     % delete keypoints and landmarkes that are discarded
     S.t0.P = S.t0.P(find(keep>0),:);
