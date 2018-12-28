@@ -26,7 +26,6 @@ function S_data = establishKptCorrespondencesHARRIS(S_data, img0, img1)
     %debug
     showMatchedFeatures(img0,img1,matchedPoints1,matchedPoints2)
     
-    %have to be roundd, weird estimatefundamentalmatrix function
-    S_data.t1.P=double(round(fliplr(matchedPoints2.Location)))./HrScale;
-    S_data.t0.P=double(round(fliplr(matchedPoints1.Location)))./HrScale;
+    S_data.t1.P=double(fliplr(matchedPoints2.Location))./HrScale;
+    S_data.t0.P=double(fliplr(matchedPoints1.Location))./HrScale;
 end

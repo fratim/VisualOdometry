@@ -2,8 +2,8 @@ function S = estimaterelativePose_ML(S, K, isBoot)
     
     % inliersIndex and status can be used for debugging, no use in normal
     % mode
-    [F,inliersIndex,status] = estimateFundamentalMatrix(fliplr(S.t0.P(:,:)),...
-    fliplr(S.t1.P(:,:)),'Method','RANSAC',...
+    [F,inliersIndex,status] = estimateFundamentalMatrix(round(fliplr(S.t0.P(:,:))),...
+    round(fliplr(S.t1.P(:,:))),'Method','RANSAC',...
     'NumTrials',100000,'DistanceThreshold',0.001,'InlierPercentage',80,'Confidence',99.99);
 
     cameraParams = cameraParameters('IntrinsicMatrix',K');
@@ -12,7 +12,7 @@ function S = estimaterelativePose_ML(S, K, isBoot)
     
     disp('R and T estimated over last iteration: ')
     disp([R,T])
- 
+    
     T_guess = [S.t0.Pose;zeros(1,3),1]*[R,T;zeros(1,3),1];
     S.t1.Pose = T_guess(1:3,1:4);
     
@@ -29,16 +29,11 @@ function S = estimaterelativePose_ML(S, K, isBoot)
         distances_old = sqrt(sum(diff_old.^2,2));
         distances_new = sqrt(sum(diff_new.^2,2));
         scales = distances_old./distances_new;
-<<<<<<< HEAD
-        median_scale = nanmedian(scales);
-
-=======
-        
-        median_scale = median(scales)
+        median_scale = median(scales);
         if(isnan(median_scale))
-            median_scale;
+            median_scale
+            disp("median is NAN!!!!!!!!!!")
         end
->>>>>>> 130a25d2a82b5b944309c951ec4903dacd1da110
         T_new = [S.t0.Pose;zeros(1,3),1]*[R,median_scale*T;zeros(1,3),1];
         S.t1.Pose = T_new(1:3,1:4);
         

@@ -38,7 +38,7 @@ function S_data = continous_features(S_data, img, K)
 
         %Retrieve the locations of the corresponding points for each image.
         matchedPoints_new = valid_points(indexPairs(:,1),:);
-        matchedPoints_new = double(round(fliplr(matchedPoints_new)));
+        matchedPoints_new = double(fliplr(matchedPoints_new));
         matchedPoints_old = S_data.t1.C(indexPairs(:,2),:);
         
         [~, ind]= unique(S_data.t1.P, 'rows');
@@ -94,11 +94,5 @@ function S_data = continous_features(S_data, img, K)
         T_add = repmat(reshape(S_data.t1.Pose,[1,12]),size(valid_points.Location,1),1);
         S_data.t1.T = [S_data.t1.T;T_add];
     end
-    
-    %debug
-    %showMatchedFeatures(img0,img1,matchedPoints1,matchedPoints2)
-    
-    %have to be roundd, weird estimatefundamentalmatrix function
-    %S_data.t1.P=double(round(fliplr(matchedPoints2.Location)));
-    %S_data.t0.P=double(round(fliplr(matchedPoints1.Location)));
+   
 end
