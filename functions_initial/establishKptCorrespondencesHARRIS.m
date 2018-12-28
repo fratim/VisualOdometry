@@ -1,11 +1,13 @@
-function S_data = establishKptCorrespondencesHARRIS(S_data, img0, img1, rescale)
-
-    if (rescale ~= 1)
-        disp('error, rescale for Harris is assumed to be 1!')
-    end
+function S_data = establishKptCorrespondencesHARRIS(S_data, img0, img1)
     
-    points1 = detectHarrisFeatures(img0,'MinQuality',0.01,'FilterSize',3);
-    points2 = detectHarrisFeatures(img1,'MinQuality',0.01,'FilterSize',3);
+    run ParkingParameters
+    
+    %resize images
+    img0 = imresize(img0, HrScale);
+    img1 = imresize(img1, HrScale);
+    
+    points1 = detectHarrisFeatures(img0,'MinQuality',HrQuality,'FilterSize',HrKernel);
+    points2 = detectHarrisFeatures(img1,'MinQuality',HrQuality,'FilterSize',HrKernel);
     
     %Extract the neighborhood features.
 
@@ -22,9 +24,9 @@ function S_data = establishKptCorrespondencesHARRIS(S_data, img0, img1, rescale)
     matchedPoints2 = valid_points2(indexPairs(:,2),:);
     
     %debug
-    %showMatchedFeatures(img0,img1,matchedPoints1,matchedPoints2)
+    showMatchedFeatures(img0,img1,matchedPoints1,matchedPoints2)
     
     %have to be roundd, weird estimatefundamentalmatrix function
-    S_data.t1.P=double(round(fliplr(matchedPoints2.Location)));
-    S_data.t0.P=double(round(fliplr(matchedPoints1.Location)));
+    S_data.t1.P=double(round(fliplr(matchedPoints2.Location)))./HrScale;
+    S_data.t0.P=double(round(fliplr(matchedPoints1.Location)))./HrScale;
 end

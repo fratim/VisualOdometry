@@ -49,7 +49,7 @@ S.t0.Pose = eye(3,4);
 rescale = 1;
 
 % keypoint correspondences can be establisht either with HARRIS or SIFT
-S = establishKptCorrespondencesHARRIS(S, img0, img1, rescale);
+S = establishKptCorrespondencesHARRIS(S, img0, img1);
 
 % 3.3 Relative pose estimation and triangulation of landmarks, use RANSAC 
 S = estimaterelativePose_ML(S,K,1);

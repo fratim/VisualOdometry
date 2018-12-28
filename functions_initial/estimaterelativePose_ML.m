@@ -29,7 +29,7 @@ function S = estimaterelativePose_ML(S, K, isBoot)
         distances_old = sqrt(sum(diff_old.^2,2));
         distances_new = sqrt(sum(diff_new.^2,2));
         scales = distances_old./distances_new;
-        median_scale = median(scales)
+        median_scale = nanmedian(scales);
 
         T_new = [S.t0.Pose;zeros(1,3),1]*[R,median_scale*T;zeros(1,3),1];
         S.t1.Pose = T_new(1:3,1:4);

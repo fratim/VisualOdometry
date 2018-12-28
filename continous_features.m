@@ -1,20 +1,21 @@
-function S_data = continous_features(S_data, img, rescale, K)
-
-    if (rescale ~= 1)
-        disp('error, rescale for Harris is assumed to be 1!')
-    end
+function S_data = continous_features(S_data, img, K)
     
-    points_new = detectHarrisFeatures(img,'MinQuality',0.01,'FilterSize',3);
+    run ParkingParameters.m
+    points_new = detectHarrisFeatures(img,'MinQuality',HrQuality,'FilterSize',HrKernel);
     
+    img = imresize(img, HrScale);
     %Extract the neighborhood features.
 
     [features,valid_points] = extractFeatures(img,points_new);
+    
+    %rescale image ccordinates
+    valid_points.Location = valid_points.Location./HrScale;
     
     if(~isempty(S_data.t1.F))
         %Match the features.
         features_old = binaryFeatures(S_data.t1.F);
         indexPairs = matchFeatures(features,features_old,'MatchThreshold',15,'Unique',true);
-
+    
         %Retrieve the locations of the corresponding points for each image.
         matchedPoints_new = valid_points(indexPairs(:,1),:);
         matchedPoints_new = double(round(fliplr(matchedPoints_new.Location)));
@@ -61,7 +62,6 @@ function S_data = continous_features(S_data, img, rescale, K)
         T_add = repmat(reshape(S_data.t1.Pose,[1,12]),size(valid_points.Location,1),1);
         S_data.t1.T = [S_data.t1.T;T_add];
     end
-    
     
     %debug
     %showMatchedFeatures(img0,img1,matchedPoints1,matchedPoints2)
