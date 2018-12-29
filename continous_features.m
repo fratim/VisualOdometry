@@ -76,16 +76,16 @@ function S_data = continous_features(S_data, img, K)
             %           
             a = norm(P1(1:3,4)-P2(1:3,4));
 
-            for i=1:size(X,1)
+            for j=1:size(X,1)
                 %Cosine rule                
-                b = norm(P1(1:3,4)-X(i,:));
-                c = norm(P2(1:3,4)-X(i,:));
+                b = norm(P1(1:3,4)-X(j,:));
+                c = norm(P2(1:3,4)-X(j,:));
                 alpha = acos((a*a -b*b -c*c)/(-2*b*c));
 
                 %Add features that fulfill criterium
                 if(abs(alpha)>1.5/180 * pi)
-                    S_data.t1.P = [S_data.t1.P;fliplr(p2(i,:))]; % flip to get u v
-                    S_data.t1.X = [S_data.t1.X;X(i,:)];
+                    S_data.t1.P = [S_data.t1.P;fliplr(p2(j,:))]; % flip to get u v
+                    S_data.t1.X = [S_data.t1.X;X(j,:)];
                 end
             end
             %             
