@@ -36,7 +36,7 @@ S.t0.C = [];
 S.t0.F = [];
 S.t0.T = [];
 S.t0.Pose = eye(3,4);
-
+S.K = cameraParameters('IntrinsicMatrix',K');
 %S(1:2,1:6) = {  P_t1,X_t1,C_t1,F_t1,T_t1, Pose_t1;...
 %                P_t0,X_t0,C_t0,F_t0,T_t0, Pose_t0};
 
