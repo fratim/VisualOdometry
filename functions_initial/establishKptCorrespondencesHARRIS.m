@@ -1,5 +1,6 @@
 function S_data = establishKptCorrespondencesHARRIS(S_data, img0, img1)
-    
+
+    %load parameters
     run ParkingParameters
     
     %resize images
@@ -16,7 +17,7 @@ function S_data = establishKptCorrespondencesHARRIS(S_data, img0, img1)
     
     %Match the features.
 
-    indexPairs = matchFeatures(features1,features2,'MatchThreshold',15,'Unique',true);
+    indexPairs = matchFeatures(features1,features2,'MatchThreshold',MatchThresholdInit,'Unique',true);
     
     %Retrieve the locations of the corresponding points for each image.
 
@@ -24,7 +25,7 @@ function S_data = establishKptCorrespondencesHARRIS(S_data, img0, img1)
     matchedPoints2 = valid_points2(indexPairs(:,2),:);
     
     %debug
-    %showMatchedFeatures(img0,img1,matchedPoints1,matchedPoints2)
+    showMatchedFeatures(img0,img1,matchedPoints1,matchedPoints2)
     
     S_data.t1.P=double(fliplr(matchedPoints2.Location))./HrScale;
     S_data.t0.P=double(fliplr(matchedPoints1.Location))./HrScale;

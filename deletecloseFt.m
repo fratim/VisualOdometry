@@ -2,10 +2,13 @@ function [S, keep] = deletecloseFt(S, keep)
 %this function checks how close keypoints are together, and discards them,
 %in case they are too close
 
+%load parameters, given in this script
+run ParkingParameters.m
+
 keypoints = S.t1.P;
 
 %rescale 
-keypoints = keypoints./2;
+keypoints = keypoints./suppression;
 
 %round to int
 keypoints = round(keypoints);

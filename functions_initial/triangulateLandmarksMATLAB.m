@@ -1,10 +1,11 @@
 function S = triangulateLandmarksMATLAB(S,K,R,T, isBoot)
 
+    run ParkingParameters
 
     % K inverse to meet matlab convention
     cameraParams = S.K;
     stereoParams = stereoParameters(cameraParams,cameraParams,...
-                                    R,T);
+                                    R,-T);
     
     ptold = fliplr(S.t0.P);
     ptnew = fliplr(S.t1.P);
@@ -15,8 +16,12 @@ function S = triangulateLandmarksMATLAB(S,K,R,T, isBoot)
     %error is large (is this in pixels?) just trying with 1, looks fine
     %problem: some points are still projected behind the damn camera
     
-    idx_keep = find(reprojectionErrors<0.25);
+    idx_keep = find(reprojectionErrors<MaxReprojError);
     worldP = worldP(idx_keep,:);
+    
+    if (length(idx_keep)<1)
+        idx_keep
+    end
     
     % discard according feature points and landmarks
     S.t0.P = S.t0.P(idx_keep,:);

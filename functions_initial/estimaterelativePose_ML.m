@@ -6,8 +6,7 @@ function S = estimaterelativePose_ML(S, K, isBoot)
     round(fliplr(S.t1.P(:,:))),'Method','RANSAC',...
     'NumTrials',100000,'DistanceThreshold',0.001,'InlierPercentage',80,'Confidence',99.99);
 
-    cameraParams = cameraParameters('IntrinsicMatrix',K');
-    [R,T_transp] = relativeCameraPose(F,cameraParams,fliplr(S.t0.P),fliplr(S.t1.P));
+    [R,T_transp] = relativeCameraPose(F,S.K,fliplr(S.t0.P),fliplr(S.t1.P));
     T = T_transp';
     
     disp('R and T estimated over last iteration: ')

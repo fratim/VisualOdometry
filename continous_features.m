@@ -7,19 +7,10 @@ function S_data = continous_features(S_data, img, K)
     points_new = detectHarrisFeatures(img,'MinQuality',HrQuality,'FilterSize',HrKernel);
     
     kpt_new_xy = double(points_new.Location/HrScale);
-    
-    downsample = 2;
-    
-    %Extract the neighborhood features.
- 
-    %[features,valid_points] = extractFeatures(img,points_new);
-    
-    %rescale image ccordinates
-    %valid_points.Location = valid_points.Location./HrScale;
 
     % implement new keypoints and load old ones
-    kpt_new_temp_xy = round(kpt_new_xy/downsample);
-    kpt_old_temp_xy = round(fliplr(S_data.t1.P)./2);
+    kpt_new_temp_xy = round(kpt_new_xy/suppression);
+    kpt_old_temp_xy = round(fliplr(S_data.t1.P)./suppression);
 
     % find duplicates
     exist_set = ismembertol(kpt_new_temp_xy,kpt_old_temp_xy,'ByRows',2);
@@ -38,18 +29,16 @@ function S_data = continous_features(S_data, img, K)
         features_old = S_data.t1.F;
         
         %match features
-        indexPairs = matchFeatures(features_new,features_old,'MatchThreshold',15,'Unique',true);
+        indexPairs = matchFeatures(features_new,features_old,'MatchThreshold',MatchThresholdCont,'Unique',true);
  
         %find according image coordinates
-        %kpt_matched_new_xy = double(kpt_new_xy(indexPairs(:,1),:));
-        %kpt_matched_old_xy = S_data.t1.C(indexPairs(:,2),:);
         kpt_matched_new_xy = double(kpt_new_xy);
         kpt_matched_old_xy = double(S_data.t1.C);
         
         %Find different feature starting points
         U = unique(S_data.t1.T,'rows');
 
-%         %Check the angle criterium
+        %Check the angle criterium
         for i=1:size(U,1)
             %Cluster different feature starting points 
             u_temp = ismember(S_data.t1.T,U(i,:),'rows');
@@ -83,7 +72,7 @@ function S_data = continous_features(S_data, img, K)
                 alpha = acos((a*a -b*b -c*c)/(-2*b*c));
 
                 %Add features that fulfill criterium
-                if(abs(alpha)>1.5/180 * pi)
+                if(abs(alpha)>MinAngle)
                     S_data.t1.P = [S_data.t1.P;fliplr(p2(j,:))]; % flip to get u v
                     S_data.t1.X = [S_data.t1.X;X(j,:)];
                 end
