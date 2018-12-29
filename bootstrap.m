@@ -45,9 +45,6 @@ S.K = cameraParameters('IntrinsicMatrix',K');
     
 % 3.2 Establish keypoint correspondences
 
-% rescale factor for image processing (must be 1 for HARRIS)
-rescale = 1;
-
 % keypoint correspondences can be establisht either with HARRIS or SIFT
 S = establishKptCorrespondencesHARRIS(S, img0, img1);
 

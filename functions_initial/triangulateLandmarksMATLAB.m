@@ -19,8 +19,10 @@ function S = triangulateLandmarksMATLAB(S,K,R,T, isBoot)
     idx_keep = find(reprojectionErrors<MaxReprojError);
     worldP = worldP(idx_keep,:);
     
-    if (length(idx_keep)<1)
-        idx_keep
+    % break here if less than 15 keypoints are tracked
+    if length(idx_keep(idx_keep>0))<15
+        disp('Less than 15 keypoints tracked, execution stopped')
+        return
     end
     
     % discard according feature points and landmarks

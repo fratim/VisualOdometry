@@ -2,14 +2,16 @@ clear all
 close all
 clc
 addpath(genpath('.'));
+
 %% Setup
-ds = 2; % 0: KITTI, 1: Malaga, 2: parking
+ds = 0; % 0: KITTI, 1: Malaga, 2: parking
 debug = true;
 kitti_path = 'kitti';
 malaga_path = 'malaga-urban-dataset-extract-07';
 parking_path = 'parking';
 
 if ds == 0
+    
     % need to set kitti_path to folder containing "00" and "poses"
     assert(exist('kitti_path', 'var') ~= 0);
     ground_truth = load([kitti_path '/poses/00.txt']);
@@ -42,13 +44,13 @@ end
 %% Bootstrap
 % need to set bootstrap_frames
 if ds == 0
-    bootstrap_frames = [0,4];
+    bootstrap_frames = [0,2];
     img0 = imread([kitti_path '/00/image_0/' ...
         sprintf('%06d.png',bootstrap_frames(1))]);
     img1 = imread([kitti_path '/00/image_0/' ...
         sprintf('%06d.png',bootstrap_frames(2))]);
 elseif ds == 1
-    bootstrap_frames = [0,4];
+    bootstrap_frames = [1,3];
     img0 = rgb2gray(imread([malaga_path ...
         '/malaga-urban-dataset-extract-07_rectified_800x600_Images/' ...
         left_images(bootstrap_frames(1)).name]));
@@ -93,12 +95,12 @@ range = (bootstrap_frames(2)+1):last_frame;
 %start = range(1)
 %range = [start, start + 1, start + 2, start + 4, start + 5, start + 7, start + 8, start + 9]
 %create matlab klt point tracker with parameters below
-r_T = 20;
+r_T = 15;
 bs = 2*r_T+1;
 num_iters = 50;
-lambda = 1;
+lambda = 5;
 
-pointTracker = vision.PointTracker('NumPyramidLevels',1, ...
+pointTracker = vision.PointTracker('NumPyramidLevels',3, ...
         'MaxBidirectionalError',lambda,'BlockSize',[bs,bs],'MaxIterations',num_iters);
 
 %take second bootstrap image for initialization
