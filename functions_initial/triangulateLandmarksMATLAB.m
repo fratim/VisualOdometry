@@ -2,7 +2,7 @@ function S = triangulateLandmarksMATLAB(S,K,R,T, isBoot)
 
 
     % K inverse to meet matlab convention
-    cameraParams = cameraParameters('IntrinsicMatrix',K');
+    cameraParams = S.K;
     stereoParams = stereoParameters(cameraParams,cameraParams,...
                                     R,T);
     
