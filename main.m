@@ -4,14 +4,13 @@ clc
 addpath(genpath('.'));
 
 %% Setup
-ds = 0; % 0: KITTI, 1: Malaga, 2: parking
+ds = 2; % 0: KITTI, 1: Malaga, 2: parking
 debug = true;
 kitti_path = 'kitti';
 malaga_path = 'malaga-urban-dataset-extract-07';
 parking_path = 'parking';
 
 if ds == 0
-    
     % need to set kitti_path to folder containing "00" and "poses"
     assert(exist('kitti_path', 'var') ~= 0);
     ground_truth = load([kitti_path '/poses/00.txt']);
@@ -31,6 +30,7 @@ elseif ds == 1
         0 621.18428 309.05989
         0 0 1];
 elseif ds == 2
+    run ParkingParameters
     % Path containing images, depths and all...
     assert(exist('parking_path', 'var') ~= 0);
     last_frame = 598;
@@ -70,21 +70,13 @@ end
 %Bootstrapping 
 S = bootstrap(img0,img1,K);
 
-% debug mode: get rescale factor from groundtruth
-% fit estimated pose to groundtruth, to recover scale factor
-% if (debug == true)
-%    S.t1.Pose(1:3,4) = S.t1.Pose(1:3,4)*ground_truth(bootstrap_frames(2)+4,1);
-% end
-
-% Debug plot results
+%debug position output
 debug = true;
 if (debug == true)
     debugplot(S, img0, img1)   
     disp('Position estimate after initialization:')
     disp(S.t1.Pose)
 end
-
-
 
 %% Continuous operation
 
@@ -95,17 +87,22 @@ range = (bootstrap_frames(2)+1):last_frame;
 %start = range(1)
 %range = [start, start + 1, start + 2, start + 4, start + 5, start + 7, start + 8, start + 9]
 %create matlab klt point tracker with parameters below
-r_T = 15;
+
+global r_T
+global num_iters
+global lambda
+
 bs = 2*r_T+1;
-num_iters = 50;
-lambda = 5;
 
 pointTracker = vision.PointTracker('NumPyramidLevels',3, ...
         'MaxBidirectionalError',lambda,'BlockSize',[bs,bs],'MaxIterations',num_iters);
 
 %take second bootstrap image for initialization
 prev_image = img1;
-plot_index = 4;
+
+%plot eyery x images
+plot_freq = 5;
+plot_index = 6;
 
 %iterate through all frames from video
 for i = range
@@ -131,17 +128,13 @@ for i = range
     if(~running)
         break
     end
-   
     
     % debug
-    if (debug==true)
+    if (debug==true && plot_index > (plot_freq+1))
         debugplot(S, prev_image,image)
-        disp('Current pose:')
-        disp(S.t1.Pose)
         pause(0.01);
         plot_index = 0;
     end
-    
     
     % set previous image to current image, needed for next iteration
     prev_image = image;

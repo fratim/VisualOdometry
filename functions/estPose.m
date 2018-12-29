@@ -2,15 +2,12 @@ function S = estPose(S, K, isBoot)
     
     % inliersIndex and status can be used for debugging, no use in normal
     % mode
-    [F,inliersIndex,status] = estimateFundamentalMatrix(round(fliplr(S.t0.P(:,:))),...
-    round(fliplr(S.t1.P(:,:))),'Method','RANSAC',...
+    [F,inliersIndex,status] = estimateFundamentalMatrix(round(fliplr(S.t0.P)),...
+    round(fliplr(S.t1.P)),'Method','RANSAC',...
     'NumTrials',100000,'DistanceThreshold',0.001,'InlierPercentage',80,'Confidence',99.99);
 
     [R,T_transp] = relativeCameraPose(F,S.K,fliplr(S.t0.P),fliplr(S.t1.P));
     T = T_transp';
-    
-    disp('R and T estimated over last iteration: ')
-    disp([R,T])
     
     T_guess = [S.t0.Pose;zeros(1,3),1]*[R,T;zeros(1,3),1];
     S.t1.Pose = T_guess(1:3,1:4);
@@ -29,15 +26,15 @@ function S = estPose(S, K, isBoot)
         distances_new = sqrt(sum(diff_new.^2,2));
         scales = distances_old./distances_new;
         median_scale = median(scales);
-        if(isnan(median_scale))
-            median_scale
-            disp("median is NAN!!!!!!!!!!")
-        end
         T_new = [S.t0.Pose;zeros(1,3),1]*[R,median_scale*T;zeros(1,3),1];
         S.t1.Pose = T_new(1:3,1:4);
         
         % triangulate landmarks with correct camera position 
         S = triLndCont(S,K,R,median_scale*T,isBoot);
+        
+        % print messages
+        disp('Current R,T, current estimated Pose')
+        disp([R,T,S.t1.Pose])
     end
     
 end

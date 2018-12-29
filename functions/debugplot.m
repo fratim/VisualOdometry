@@ -4,14 +4,14 @@ function debugplot(S, imga, imgb)
     pplot = 1:length(S.t0.P(:,1));
     % pplot = [1,2,3,4];
 
-    subplot(2,2,1)
+    subplot(1,2,1)
     imshow(imga)
     hold on
     scatter(S.t0.P(pplot,2),S.t0.P(pplot,1),'red')
     % removed for computation reasons
     %title('img0 matched features')
 
-    subplot(2,2,2)
+    subplot(1,2,2)
     imshow(imgb)
     %plot matches
     hold on

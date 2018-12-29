@@ -1,6 +1,7 @@
 function S = triLndCont(S,K,R,T, isBoot)
 
-    run ParkingParameters
+    global MaxReprojError
+    global MinPoint
 
     % K inverse to meet matlab convention
     cameraParams = S.K;
@@ -12,16 +13,12 @@ function S = triLndCont(S,K,R,T, isBoot)
     
     [worldP,reprojectionErrors] = triangulate(ptold,ptnew,stereoParams);
     
-    %attempt: discard landmarks and according keypoitns, if reprojection
-    %error is large (is this in pixels?) just trying with 1, looks fine
-    %problem: some points are still projected behind the damn camera
-    
-    idx_keep = find(reprojectionErrors<MaxReprojError);
+    idx_keep = find(reprojectionErrors < MaxReprojError);
     worldP = worldP(idx_keep,:);
     
     % break here if less than 15 keypoints are tracked
-    if length(idx_keep(idx_keep>0))<15
-        disp('Less than 15 keypoints tracked, execution stopped')
+    if length(idx_keep(idx_keep>0)) < MinPoint
+        disp('Less than MinPoint points tracked, triangulation error too large!')
         return
     end
     

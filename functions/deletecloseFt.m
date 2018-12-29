@@ -3,12 +3,12 @@ function [S, keep] = deletecloseFt(S, keep)
 %in case they are too close
 
 %load parameters, given in this script
-run ParkingParameters.m
+global Suppression
 
 keypoints = S.t1.P;
 
 %rescale 
-keypoints = keypoints./suppression;
+keypoints = keypoints./Suppression;
 
 %round to int
 keypoints = round(keypoints);

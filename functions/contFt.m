@@ -1,7 +1,12 @@
 function S_data = contFt(S_data, img, K)
     
     %load parameters, given in this script
-    run ParkingParameters.m
+    global HrQuality
+    global HrKernel
+    global HrScale
+    global Suppression
+    global MatchThresholdCont
+    global MinAngle
     
     img = imresize(img, HrScale);
     points_new = detectHarrisFeatures(img,'MinQuality',HrQuality,'FilterSize',HrKernel);
@@ -9,8 +14,8 @@ function S_data = contFt(S_data, img, K)
     kpt_new_xy = double(points_new.Location/HrScale);
 
     % implement new keypoints and load old ones
-    kpt_new_temp_xy = round(kpt_new_xy/suppression);
-    kpt_old_temp_xy = round(fliplr(S_data.t1.P)./suppression);
+    kpt_new_temp_xy = round(kpt_new_xy/Suppression);
+    kpt_old_temp_xy = round(fliplr(S_data.t1.P)./Suppression);
 
     % find duplicates
     exist_set = ismembertol(kpt_new_temp_xy,kpt_old_temp_xy,'ByRows',2);
@@ -62,7 +67,7 @@ function S_data = contFt(S_data, img, K)
             if(isempty(X))
                 continue
             end
-            %           
+                     
             a = norm(P1(1:3,4)-P2(1:3,4));
 
             for j=1:size(X,1)

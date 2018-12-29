@@ -1,7 +1,10 @@
 function S_data = kptHar(S_data, img0, img1)
 
     %load parameters
-    run ParkingParameters
+    global HrScale
+    global HrKernel
+    global MatchThresholdInit
+    global HrQuality
     
     %resize images
     img0 = imresize(img0, HrScale);
