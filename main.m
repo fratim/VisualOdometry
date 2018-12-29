@@ -4,13 +4,14 @@ clc
 addpath(genpath('.'));
 
 %% Setup
-ds = 2; % 0: KITTI, 1: Malaga, 2: parking
+ds = 0; % 0: KITTI, 1: Malaga, 2: parking
 debug = true;
 kitti_path = 'kitti';
 malaga_path = 'malaga-urban-dataset-extract-07';
 parking_path = 'parking';
 
 if ds == 0
+    run KittiParameters
     % need to set kitti_path to folder containing "00" and "poses"
     assert(exist('kitti_path', 'var') ~= 0);
     ground_truth = load([kitti_path '/poses/00.txt']);
@@ -20,6 +21,7 @@ if ds == 0
         0 7.188560000000e+02 1.852157000000e+02
         0 0 1];
 elseif ds == 1
+    run MalagaParameters
     % Path containing the many files of Malaga 7.
     assert(exist('malaga_path', 'var') ~= 0);
     images = dir([malaga_path ...
@@ -68,7 +70,12 @@ else
 end
 
 %Bootstrapping 
-S = bootstrap(img0,img1,K);
+[S, success] = bootstrap(img0,img1,K);
+
+if(~success)
+    disp('Initialization not successfull!')
+    return
+end
 
 %debug position output
 debug = true;
@@ -91,17 +98,20 @@ range = (bootstrap_frames(2)+1):last_frame;
 global r_T
 global num_iters
 global lambda
+global numPyramids
+global global_rescale
 
 bs = 2*r_T+1;
 
-pointTracker = vision.PointTracker('NumPyramidLevels',3, ...
+pointTracker = vision.PointTracker('NumPyramidLevels',numPyramids, ...
         'MaxBidirectionalError',lambda,'BlockSize',[bs,bs],'MaxIterations',num_iters);
 
 %take second bootstrap image for initialization
 prev_image = img1;
+prev_image = imresize(prev_image, global_rescale);
 
 %plot eyery x images
-plot_freq = 5;
+plot_freq = 1;
 plot_index = 6;
 
 %iterate through all frames from video
@@ -121,19 +131,23 @@ for i = range
         assert(false);
     end
     
+    %global rescale
+    image = imresize(image, global_rescale);
+    
+    % debug
+    if (debug==true && plot_index > (plot_freq+1))
+        %debugplot(S, prev_image,image)
+        showMatchedFeatures(prev_image,image,fliplr(S.t0.P),fliplr(S.t1.P))
+        pause(0.01);
+        plot_index = 0;
+    end
+    
     % Do tracking from last to new frame
     [S,running] = contTra(pointTracker,S,prev_image,image,K);
 
     % Check if enough features are available
     if(~running)
         break
-    end
-    
-    % debug
-    if (debug==true && plot_index > (plot_freq+1))
-        debugplot(S, prev_image,image)
-        pause(0.01);
-        plot_index = 0;
     end
     
     % set previous image to current image, needed for next iteration

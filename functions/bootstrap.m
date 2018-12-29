@@ -1,4 +1,4 @@
-function S =  bootstrap(img0, img1, K)%% Initialization of Pose and Landmarks
+function [S, success] =  bootstrap(img0, img1, K)%% Initialization of Pose and Landmarks
 
 % establish S data struct (cell)
 % Markovian idea: cell of information (denoted by S) is passed and updated continously,
@@ -44,10 +44,17 @@ S.K = cameraParameters('IntrinsicMatrix',K');
 % this is done in the Bootstrap part, when introducing the 'bootstap_frames' vector
     
 % 3.2 Establish keypoint correspondences
+success = true;
 
 % keypoint correspondences can be establisht either with HARRIS or SIFT
 S = kptHar(S, img0, img1);
 
+
 % 3.3 Relative pose estimation and triangulation of landmarks, use RANSAC 
-S = estPose(S,K,1);
+[S, running] = estPose(S,K,1);
+
+if(~running)
+    success = false;
+end
+
 end

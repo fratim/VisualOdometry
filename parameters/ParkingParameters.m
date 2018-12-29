@@ -38,3 +38,15 @@ num_iters = 50;
 % max bidirectional error
 global lambda
 lambda = 5;
+global numPyramids
+numPyramids = 3;
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%RANSAC Parameters
+global NumTrials
+NumTrials = 100000;
+global DistanceThreshold
+DistanceThreshold = 0.001;
+global InlierPercentage
+InlierPercentage = 80;
+global Confidence
+Confidence = 99.99;

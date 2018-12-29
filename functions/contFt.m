@@ -43,6 +43,7 @@ function S_data = contFt(S_data, img, K)
         %Find different feature starting points
         U = unique(S_data.t1.T,'rows');
 
+        ldm_added = 0;
         %Check the angle criterium
         for i=1:size(U,1)
             %Cluster different feature starting points 
@@ -80,10 +81,12 @@ function S_data = contFt(S_data, img, K)
                 if(abs(alpha)>MinAngle)
                     S_data.t1.P = [S_data.t1.P;fliplr(p2(j,:))]; % flip to get u v
                     S_data.t1.X = [S_data.t1.X;X(j,:)];
+                    ldm_added = ldm_added +1;
                 end
             end
             %             
         end
+        
         % Remove lost features (take only the matched ones)
         S_data.t1.F = S_data.t1.F(indexPairs(:,2),:);
         S_data.t1.C = S_data.t1.C(indexPairs(:,2),:);
@@ -95,6 +98,9 @@ function S_data = contFt(S_data, img, K)
         S_data.t1.C = [S_data.t1.C;kpt_new_xy(new_feat_ind,:)];
         T_add = repmat(reshape(S_data.t1.Pose,[1,12]),size(new_feat_ind,2),1);
         S_data.t1.T = [S_data.t1.T;T_add];
+        
+        disp([  'features tracked: ', num2str(length(S_data.t0.X)),' //landmarks added: ',...
+                num2str(ldm_added), ' //candidates added: ', num2str(length(new_feat_ind(new_feat_ind>0)))])
         
         
     %Initial features

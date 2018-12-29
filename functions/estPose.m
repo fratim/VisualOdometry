@@ -1,10 +1,16 @@
-function S = estPose(S, K, isBoot)
+function [S, running] = estPose(S, K, isBoot)
     
+    global NumTrials
+    global DistanceThreshold
+    global InlierPercentage
+    global Confidence
+
     % inliersIndex and status can be used for debugging, no use in normal
     % mode
     [F,inliersIndex,status] = estimateFundamentalMatrix(round(fliplr(S.t0.P)),...
     round(fliplr(S.t1.P)),'Method','RANSAC',...
-    'NumTrials',100000,'DistanceThreshold',0.001,'InlierPercentage',80,'Confidence',99.99);
+    'NumTrials',NumTrials,'DistanceThreshold',DistanceThreshold,'InlierPercentage',...
+    InlierPercentage,'Confidence',Confidence);
 
     [R,T_transp] = relativeCameraPose(F,S.K,fliplr(S.t0.P),fliplr(S.t1.P));
     T = T_transp';
@@ -13,7 +19,11 @@ function S = estPose(S, K, isBoot)
     S.t1.Pose = T_guess(1:3,1:4);
     
     %S = triangulateLandmarkslinear(S, K);
-    S = triLndCont(S,K,R,T, isBoot);
+    [S, running] = triLndCont(S,K,R,T, isBoot);
+    
+    if(~running)
+        return
+    end
     
     if (isBoot==0)
         %recover scale factor

@@ -30,7 +30,7 @@ function [S,running, scale_fac] = contTra(pointTracker,S,prev_image,image,K, sca
     % break here if less than Minpoints keypoints are tracked
     if length(keep(keep>0)) < MinPoints
         disp('Less than Minpoints keypoints tracked, execution stopped')
-        running=false;
+        running = false;
     end
     
     %release point tracker, such that keypoints are only used from frame to
@@ -38,8 +38,10 @@ function [S,running, scale_fac] = contTra(pointTracker,S,prev_image,image,K, sca
     release(pointTracker);
     
     %Calculate pose
-    S = estPose(S,K,0);
+    [S, running] = estPose(S,K,0);
     
-    %Get new features
-    S = contFt(S,image,K);
+    if(running)
+        %Get new features
+        S = contFt(S,image,K);
+    end
 end

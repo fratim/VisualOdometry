@@ -19,8 +19,8 @@ duplicate_ind = setdiff(1:size(keypoints, 1), ind);
 keep(duplicate_ind)=0;
 
 %debug
-disp("points deleted that were too close: ")
-disp(length(duplicate_ind))
+%disp("points deleted that were too close: ")
+%disp(length(duplicate_ind))
 
 end
 

@@ -1,8 +1,10 @@
-function S = triLndCont(S,K,R,T, isBoot)
+function [S, running] = triLndCont(S,K,R,T, isBoot)
 
     global MaxReprojError
-    global MinPoint
+    global MinPoints
 
+    running = true;
+    
     % K inverse to meet matlab convention
     cameraParams = S.K;
     stereoParams = stereoParameters(cameraParams,cameraParams,...
@@ -17,8 +19,9 @@ function S = triLndCont(S,K,R,T, isBoot)
     worldP = worldP(idx_keep,:);
     
     % break here if less than 15 keypoints are tracked
-    if length(idx_keep(idx_keep>0)) < MinPoint
-        disp('Less than MinPoint points tracked, triangulation error too large!')
+    if length(idx_keep(idx_keep>0)) < MinPoints
+        disp('Less than MinPoints points tracked, triangulation error too large!')
+        running = false;
         return
     end
     
