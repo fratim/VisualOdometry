@@ -44,30 +44,39 @@ function S_data = continous_features(S_data, img, K)
         kpt_matched_new_xy = double(kpt_new_xy(indexPairs(:,1),:));
         kpt_matched_old_xy = S_data.t1.C(indexPairs(:,2),:);
         
-%         %Check the angle criterium
-       for i=1:size(indexPairs(:,1),1)
+        disp('start')
+        tic
+        %Check the angle criterium
+        
+        cameraParams = cameraParameters('IntrinsicMatrix',K');
+        
+        for i=1:size(indexPairs(:,1),1)
+
             p1 = double(kpt_matched_old_xy(i,:));
             p2 = kpt_matched_new_xy(i,:);
             P1 = reshape(S_data.t1.T(i,:),[3,4]);
             P2 = S_data.t1.Pose;
-            X = triangulateNewLandmarklinear(p1,p2,P1,P2,K);
+            X = triangulateNewLandmarklinear(p1,p2,P1,P2,cameraParams);
+            
             if(isempty(X))
                 continue
             end
-%             
+            
             %Cosine rule
             a = norm(P1(1:3,4)-P2(1:3,4));
             b = norm(P1(1:3,4)-X);
             c = norm(P2(1:3,4)-X);
             alpha = acos((a*a -b*b -c*c)/(-2*b*c));
-            
+
             %Add features that fulfill criterium
             if(abs(alpha)>1.5/180 * pi)
                 S_data.t1.P = [S_data.t1.P;fliplr(p2)]; % flip to get u v
                 S_data.t1.X = [S_data.t1.X;X];
             end
-%             
-       end
+            
+        end
+        disp('stop')
+        
         % Remove lost features (take only the matched ones)
         S_data.t1.F = S_data.t1.F(indexPairs(:,2),:);
         S_data.t1.C = S_data.t1.C(indexPairs(:,2),:);
@@ -79,6 +88,10 @@ function S_data = continous_features(S_data, img, K)
         S_data.t1.C = [S_data.t1.C;kpt_new_xy(new_feat_ind,:)];
         T_add = repmat(reshape(S_data.t1.Pose,[1,12]),size(new_feat_ind,2),1);
         S_data.t1.T = [S_data.t1.T;T_add];
+        
+        % feature candidates debug message
+        disp('Landmarks candidates stored: ')
+        disp(length(S_data.t1.C))
         
         
     %Initial features

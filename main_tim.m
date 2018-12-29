@@ -103,6 +103,7 @@ pointTracker = vision.PointTracker('NumPyramidLevels',1, ...
 
 %take second bootstrap image for initialization
 prev_image = img1;
+plot_count = 5;
 
 %iterate through all frames from video
 for i = range
@@ -130,7 +131,7 @@ for i = range
     end
    
     % debug
-    if (debug==true)
+    if (debug==true && plot)
         debugplot(S, prev_image,image)
         disp('Current pose:')
         disp(S.t1.Pose)
