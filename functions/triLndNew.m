@@ -1,4 +1,4 @@
-function X = triangulateNewLandmarklinear(p1,p2,P1,P2,cameraParams)
+function X = triLndNew(p1,p2,P1,P2,cameraParams)
     
     run ParkingParameters.m
 

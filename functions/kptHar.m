@@ -1,4 +1,4 @@
-function S_data = establishKptCorrespondencesHARRIS(S_data, img0, img1)
+function S_data = kptHar(S_data, img0, img1)
 
     %load parameters
     run ParkingParameters

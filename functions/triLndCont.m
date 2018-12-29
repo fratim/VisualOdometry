@@ -1,4 +1,4 @@
-function S = triangulateLandmarksMATLAB(S,K,R,T, isBoot)
+function S = triLndCont(S,K,R,T, isBoot)
 
     run ParkingParameters
 

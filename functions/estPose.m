@@ -1,4 +1,4 @@
-function S = estimaterelativePose_ML(S, K, isBoot)
+function S = estPose(S, K, isBoot)
     
     % inliersIndex and status can be used for debugging, no use in normal
     % mode
@@ -16,7 +16,7 @@ function S = estimaterelativePose_ML(S, K, isBoot)
     S.t1.Pose = T_guess(1:3,1:4);
     
     %S = triangulateLandmarkslinear(S, K);
-    S = triangulateLandmarksMATLAB(S,K,R,T, isBoot);
+    S = triLndCont(S,K,R,T, isBoot);
     
     if (isBoot==0)
         %recover scale factor
@@ -37,7 +37,7 @@ function S = estimaterelativePose_ML(S, K, isBoot)
         S.t1.Pose = T_new(1:3,1:4);
         
         % triangulate landmarks with correct camera position 
-        S = triangulateLandmarksMATLAB(S,K,R,median_scale*T,isBoot);
+        S = triLndCont(S,K,R,median_scale*T,isBoot);
     end
     
 end

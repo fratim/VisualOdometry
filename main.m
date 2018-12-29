@@ -125,7 +125,7 @@ for i = range
     end
     
     % Do tracking from last to new frame
-    [S,running] = continous_tracking(pointTracker,S,prev_image,image,K);
+    [S,running] = contTra(pointTracker,S,prev_image,image,K);
 
     % Check if enough features are available
     if(~running)

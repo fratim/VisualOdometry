@@ -46,8 +46,8 @@ S.K = cameraParameters('IntrinsicMatrix',K');
 % 3.2 Establish keypoint correspondences
 
 % keypoint correspondences can be establisht either with HARRIS or SIFT
-S = establishKptCorrespondencesHARRIS(S, img0, img1);
+S = kptHar(S, img0, img1);
 
 % 3.3 Relative pose estimation and triangulation of landmarks, use RANSAC 
-S = estimaterelativePose_ML(S,K,1);
+S = estPose(S,K,1);
 end

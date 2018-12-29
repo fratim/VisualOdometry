@@ -1,4 +1,4 @@
-function [S,running, scale_fac] = continous_tracking(pointTracker,S,prev_image,image,K, scale_fac)
+function [S,running, scale_fac] = contTra(pointTracker,S,prev_image,image,K, scale_fac)
     running = true;
     %flip to get x,y
     keypoints = fliplr(S.t1.P);
@@ -39,8 +39,8 @@ function [S,running, scale_fac] = continous_tracking(pointTracker,S,prev_image,i
     end
     
     %Calculate pose
-    S = estimaterelativePose_ML(S,K,0);
+    S = estPose(S,K,0);
     
     %Get new features
-    S = continous_features(S,image,K);
+    S = contFt(S,image,K);
 end

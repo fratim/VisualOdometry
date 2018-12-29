@@ -1,4 +1,4 @@
-function S_data = continous_features(S_data, img, K)
+function S_data = contFt(S_data, img, K)
     
     %load parameters, given in this script
     run ParkingParameters.m
@@ -57,7 +57,7 @@ function S_data = continous_features(S_data, img, K)
             P2 = S_data.t1.Pose;
 
             %Triangulate matched candidates
-            X = triangulateNewLandmarklinear(p1,p2,P1,P2,S_data.K);
+            X = triLndNew(p1,p2,P1,P2,S_data.K);
 
             if(isempty(X))
                 continue
