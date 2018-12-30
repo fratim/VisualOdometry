@@ -23,38 +23,41 @@ function [S, success] =  bootstrap(img0, img1, K)%% Initialization of Pose and L
 
 %S = cell(2,6);
 %S = struct('P_t1',{},'X_t1',{},'C_t1',{})
-S.t1.P = zeros(1,1);
-S.t1.X = zeros(1,1);
+S.t1.P = [];
+S.t1.X = [];
 S.t1.C = [];
 S.t1.F = [];
 S.t1.T = [];
-S.t1.Pose = zeros(3,4);
+S.t1.Pose = [];
 
-S.t0.P = zeros(1,1);
-S.t0.X = zeros(1,1);
+S.t0.P = [];
+S.t0.X = [];
 S.t0.C = [];
 S.t0.F = [];
 S.t0.T = [];
 S.t0.Pose = eye(3,4);
 S.K = cameraParameters('IntrinsicMatrix',K');
-%S(1:2,1:6) = {  P_t1,X_t1,C_t1,F_t1,T_t1, Pose_t1;...
-%                P_t0,X_t0,C_t0,F_t0,T_t0, Pose_t0};
 
-% 3.1 manually select two frames I_0 and I_1
-% this is done in the Bootstrap part, when introducing the 'bootstap_frames' vector
-    
 % 3.2 Establish keypoint correspondences
 success = true;
 
 % keypoint correspondences can be establisht either with HARRIS or SIFT
-S = kptHar(S, img0, img1);
+[S, running] = kptHar(S, img0, img1);
 
+if(~running)
+    success = false;
+    return
+end
+
+keep = ones(length(S.t1.P),1);
+[S, running] = deletecloseFt(S, keep);
 
 % 3.3 Relative pose estimation and triangulation of landmarks, use RANSAC 
 [S, running] = estPose(S,K,1);
 
 if(~running)
     success = false;
+    return
 end
 
 end

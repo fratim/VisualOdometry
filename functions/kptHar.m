@@ -1,10 +1,12 @@
-function S_data = kptHar(S_data, img0, img1)
+function [S_data, running] = kptHar(S_data, img0, img1)
 
     %load parameters
     global HrScale
     global HrKernel
     global MatchThresholdInit
     global HrQuality
+    
+    running = true;
     
     %resize images
     img0 = imresize(img0, HrScale);
@@ -15,8 +17,8 @@ function S_data = kptHar(S_data, img0, img1)
     
     %Extract the neighborhood features.
 
-    [features1,valid_points1] = extractFeatures(img0,points1);
-    [features2,valid_points2] = extractFeatures(img1,points2);
+    [features1,valid_points1] = extractFeatures(img0,points1,'Method','Block','Blocksize',19);
+    [features2,valid_points2] = extractFeatures(img1,points2,'Method','Block','Blocksize',19);
     
     %Match the features.
 
@@ -32,4 +34,5 @@ function S_data = kptHar(S_data, img0, img1)
     
     S_data.t1.P=double(fliplr(matchedPoints2.Location))./HrScale;
     S_data.t0.P=double(fliplr(matchedPoints1.Location))./HrScale;
+    
 end

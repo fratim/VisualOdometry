@@ -1,14 +1,21 @@
 % Parking Parameters
 
+%choose if new landmarks shall be detected (otherwise only running with
+%init landmarks)
+global detectNewLnd;
+detectNewLnd = true;
+%rescale for cont operation
+global cont_rescale
+cont_rescale = 1;
 % Harris Kernel Size
 global HrKernel
 HrKernel = 9;
 % HArris Rescale
 global HrScale
-HrScale = 0.7;
+HrScale = 1;
 % Harris Minimum Quality
 global HrQuality
-HrQuality = 0.00001;
+HrQuality = 0.000001;
 % Minimum angle for new landmarks
 global MinAngle
 MinAngle = 1.5/180 * pi;
@@ -17,8 +24,8 @@ global Suppression
 Suppression = 2;
 % Featue Matching Threshold for triangulation of new landmarks
 global MatchThresholdCont
-MatchThresholdCont = 15;
-%Feature MAtching Threshold for Initializaation
+MatchThresholdCont = 100;
+%Feature Matching Threshold for Initializaation
 global MatchThresholdInit
 MatchThresholdInit = 15;
 %MAximum permitted reprojection Error (in Pixels??)

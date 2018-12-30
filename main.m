@@ -69,10 +69,6 @@ else
     assert(false);
 end
 
-global global_rescale
-
-img0 = imresize(img0, global_rescale);
-img1 = imresize(img1, global_rescale);
 
 %Bootstrapping 
 [S, success] = bootstrap(img0,img1,K);
@@ -104,6 +100,7 @@ global r_T
 global num_iters
 global lambda
 global numPyramids
+global cont_rescale
 
 bs = 2*r_T+1;
 
@@ -111,7 +108,10 @@ pointTracker = vision.PointTracker('NumPyramidLevels',numPyramids, ...
         'MaxBidirectionalError',lambda,'BlockSize',[bs,bs],'MaxIterations',num_iters);
 
 %take second bootstrap image for initialization
-prev_image = img1;
+prev_image = imresize(img1, cont_rescale);
+S.t0.P = S.t0.P*cont_rescale;
+S.t1.P = S.t1.P*cont_rescale;
+
 %plot eyery x images
 plot_freq = 1;
 plot_index = 6;
@@ -134,7 +134,10 @@ for i = range
     end
     
     %global rescale
-    image = imresize(image, global_rescale);
+    image = imresize(image, cont_rescale);
+    
+    % new timestep, therefore update S
+    S.t0 = S.t1;
     
     % debug
     if (debug==true && plot_index > (plot_freq+1))
