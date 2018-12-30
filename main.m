@@ -69,6 +69,11 @@ else
     assert(false);
 end
 
+global global_rescale
+
+img0 = imresize(img0, global_rescale);
+img1 = imresize(img1, global_rescale);
+
 %Bootstrapping 
 [S, success] = bootstrap(img0,img1,K);
 
@@ -80,7 +85,7 @@ end
 %debug position output
 debug = true;
 if (debug == true)
-    debugplot(S, img0, img1)   
+    showMatchedFeatures(img0,img1,fliplr(S.t0.P),fliplr(S.t1.P))  
     disp('Position estimate after initialization:')
     disp(S.t1.Pose)
 end
@@ -99,7 +104,6 @@ global r_T
 global num_iters
 global lambda
 global numPyramids
-global global_rescale
 
 bs = 2*r_T+1;
 
@@ -108,8 +112,6 @@ pointTracker = vision.PointTracker('NumPyramidLevels',numPyramids, ...
 
 %take second bootstrap image for initialization
 prev_image = img1;
-prev_image = imresize(prev_image, global_rescale);
-
 %plot eyery x images
 plot_freq = 1;
 plot_index = 6;

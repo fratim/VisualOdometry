@@ -1,31 +1,31 @@
 % Parking Parameters
 %global rrscale, before any operation
 global global_rescale
-global_rescale = 1;
+global_rescale = 0.5;
 % Harris Kernel Size
 global HrKernel
-HrKernel = 17;
+HrKernel = 7;
 % HArris Rescale
 global HrScale
 HrScale = 1;
 % Harris Minimum Quality
 global HrQuality
-HrQuality = 0.001;
+HrQuality = 0.01;
 % Minimum angle for new landmarks
 global MinAngle
 MinAngle = 1/180 * pi;
 % Maxima suppression (discard if image points are too close)
 global Suppression
-Suppression = 10;
+Suppression = 2;
 % Featue Matching Threshold for triangulation of new landmarks
 global MatchThresholdCont
-MatchThresholdCont = 15;
+MatchThresholdCont = 50;
 %Feature MAtching Threshold for Initializaation
 global MatchThresholdInit
-MatchThresholdInit = 15;
+MatchThresholdInit = 50;
 %MAximum permitted reprojection Error (in Pixels??)
 global MaxReprojError
-MaxReprojError = 10;
+MaxReprojError = 3;
 %Minimum Points needed to continue execution, break otherwise
 global MinPoints
 MinPoints = 15;
@@ -47,7 +47,7 @@ numPyramids = 3;
 global NumTrials
 NumTrials = 2000;
 global DistanceThreshold
-DistanceThreshold = 1;
+DistanceThreshold = 0.001;
 global InlierPercentage
 InlierPercentage = 70;
 global Confidence
