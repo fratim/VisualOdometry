@@ -46,11 +46,13 @@ end
 %% Bootstrap
 % need to set bootstrap_frames
 if ds == 0
-    bootstrap_frames = [0,2];
-    img0 = imread([kitti_path '/00/image_0/' ...
-        sprintf('%06d.png',bootstrap_frames(1))]);
-    img1 = imread([kitti_path '/00/image_0/' ...
-        sprintf('%06d.png',bootstrap_frames(2))]);
+    imgs = [];
+    bootstrap_frames = [0,3];
+    for i=bootstrap_frames(1):bootstrap_frames(2)       
+        img = imread([kitti_path '/00/image_0/' ...
+            sprintf('%06d.png',i)]);
+        imgs = [imgs;{img}];
+    end
 elseif ds == 1
     bootstrap_frames = [1,3];
     img0 = rgb2gray(imread([malaga_path ...
@@ -71,7 +73,7 @@ end
 
 
 %Bootstrapping 
-[S, success] = bootstrap(img0,img1,K);
+[S, success] = bootstrap(imgs,K);
 
 if(~success)
     disp('Initialization not successfull!')
@@ -81,13 +83,14 @@ end
 %debug position output
 debug = true;
 if (debug == true)
-    showMatchedFeatures(img0,img1,fliplr(S.t0.P),fliplr(S.t1.P))  
-    disp('Position estimate after initialization:')
+    %debugplot(S, img0,img1)
+    %showMatchedFeatures(cell2mat(imgs(bootstrap_frames(1)+1)),cell2mat(imgs(bootstrap_frames(2)+1)),fliplr(S.ti.P),fliplr(S.t1.P))  
+    %disp('Position estimate after initialization:')
     disp(S.t1.Pose)
 end
 
 %% Continuous operation
-
+img1 = cell2mat(imgs(bootstrap_frames(2)+1));
 close all
 range = (bootstrap_frames(2)+1):last_frame;
 % possible only take every xth frame (right now every second)
@@ -101,6 +104,7 @@ global num_iters
 global lambda
 global numPyramids
 global cont_rescale
+global key_freq
 
 bs = 2*r_T+1;
 
@@ -138,16 +142,16 @@ for i = range
     
     % new timestep, therefore update S
     S.t0 = S.t1;
-    
+    S.ti.X(:,1:3)=S.ti.X(:,2:4);
+    S.ti.Y(:,1:3)=S.ti.Y(:,2:4);
     % debug
-    if (debug==true && plot_index > (plot_freq+1))
-        %debugplot(S, prev_image,image)
-        showMatchedFeatures(prev_image,image,fliplr(S.t0.P),fliplr(S.t1.P))
+    if (debug==true)% && plot_index > (plot_freq+1))
+        debugplot(S, prev_image,image)
+        %showMatchedFeatures(prev_image,image,fliplr(S.t0.P),fliplr(S.t1.P))
         pause(0.01);
         plot_index = 0;
     end
     
-    % Do tracking from last to new frame
     [S,running] = contTra(pointTracker,S,prev_image,image,K);
 
     % Check if enough features are available
