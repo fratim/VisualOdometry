@@ -2,12 +2,12 @@
 
 
 global key_freq
-key_freq=3;
+key_freq = 3;
 %choose if new landmarks shall be detected (otherwise only running with
 %init landmarks)
 global detectNewLnd;
 detectNewLnd = true;
-%global rrscale, before any operation
+%global rescale, before any operation
 global cont_rescale
 cont_rescale = 1 ;%10.75;
 % Harris Kernel Size

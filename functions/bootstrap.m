@@ -36,7 +36,9 @@ S.t0.C = [];
 S.t0.F = [];
 S.t0.T = [];
 S.t0.Pose = eye(3,4);
+
 S.K = cameraParameters('IntrinsicMatrix',K');
+
 S.ti.Y = [];
 S.ti.X = [];
 S.ti.WX = [];
@@ -47,22 +49,17 @@ S.ti.WZ = [];
 success = true;
 
 % keypoint correspondences can be establisht either with HARRIS or SIFT
-P_0=[];
-%img0 = cell2mat(imgs(1));
-%img1 = cell2mat(imgs(size(imgs,1)));
-%[S, running, P_0] = kptHar(S, img0, img1, P_0,1);
+
 for i=1:size(imgs,1)-1
     S.t0.P=S.t1.P;
     img0 = cell2mat(imgs(i));
     img1 = cell2mat(imgs(i+1));
     if(i==1)
-        [S, running, P_0] = kptHar(S, img0, img1, P_0,1);
+        [S, running] = kptHar(S, img0, img1,1);
     else
-        [S, running, P_0] = kptHar(S, img0, img1, P_0,0);
+        [S, running] = kptHar(S, img0, img1,0);
     end
 end
-
-S.t0.P = P_0;
 
 if(~running)
     success = false;
@@ -74,10 +71,12 @@ keep = ones(length(S.t1.P),1);
 
 p_o = [S.ti.X(:,1) S.ti.Y(:,2)];
 p_n = [S.ti.X(:,4) S.ti.Y(:,4)];
-showMatchedFeatures(img0,img1,p_o,p_n)  
+showMatchedFeatures(img0,img1,p_o,p_n) 
+
 % 3.3 Relative pose estimation and triangulation of landmarks, use RANSAC 
 %S.ti.P = S.t0.P;
 %S.ti.X = S.t0.X;
+
 [S, running] = estPose(S,K,1);
 
 if(~running)

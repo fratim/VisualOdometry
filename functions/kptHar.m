@@ -1,4 +1,4 @@
-function [S_data, running, P_0] = kptHar(S_data, img0, img1, P_0, boot)
+function [S_data, running] = kptHar(S_data, img0, img1, boot)
 
     %load parameters
     global HrScale
@@ -47,14 +47,12 @@ function [S_data, running, P_0] = kptHar(S_data, img0, img1, P_0, boot)
         S_data.ti.Y = matchedPoints1.Location(:,2)./HrScale;
         S_data.ti.X = [S_data.ti.X , matchedPoints2.Location(:,1)./HrScale];
         S_data.ti.Y = [S_data.ti.Y , matchedPoints2.Location(:,2)./HrScale];
-        P_0=S_data.t0.P;
     else
         S_data.ti.X = S_data.ti.X(indexPairs(:,1),:);
         S_data.ti.Y = S_data.ti.Y(indexPairs(:,1),:);
         S_data.ti.X = [S_data.ti.X , matchedPoints2.Location(:,1)./HrScale];
         S_data.ti.Y = [S_data.ti.Y , matchedPoints2.Location(:,2)./HrScale];
         S_data.t0.P=double(fliplr(matchedPoints1))./HrScale;
-        P_0 = P_0(indexPairs(:,1),:);
     end
     %showMatchedFeatures(img0,img1,fliplr(S_data.t0.P),fliplr(S_data.t1.P))
 end
