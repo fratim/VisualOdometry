@@ -14,28 +14,28 @@ function [S, running] = estPose(S, K, isBoot)
     freq_idx = intersect(intersect(intersect(idx_1,idx_2),idx_3),idx_4);
     p0 = [S.ti.X(freq_idx,1) S.ti.Y(freq_idx,1)];
     p1 = [S.ti.X(freq_idx,4) S.ti.Y(freq_idx,4)];
-    [F,inliersIndex,status] = estimateFundamentalMatrix(p0,...
-    p1,'Method','RANSAC',...
-    'NumTrials',NumTrials,'DistanceThreshold',DistanceThreshold,'InlierPercentage',...
-    InlierPercentage,'Confidence',Confidence);
+    [E,inliersIndex,status] = estimateEssentialMatrix(p0,...
+    p1,S.K,...
+    'MaxNumTrials',NumTrials,'MaxDistance',DistanceThreshold,...
+    'Confidence',Confidence);
     inliersIndex = find(inliersIndex>0);
+    outliersIndex = freq_idx(find(inliersIndex==0));
     p0 = p0(inliersIndex,:);
     p1 = p1(inliersIndex,:);
-    S.ti.X=S.ti.X(freq_idx(inliersIndex),:);
-    S.ti.Y=S.ti.Y(freq_idx(inliersIndex),:);
+    stay_idx = setdiff(1:size(S.ti.X,1),outliersIndex);
+    S.ti.X=S.ti.X(stay_idx,:);
+    S.ti.Y=S.ti.Y(stay_idx,:);
     %S.t1.X = S.t1.X(inliersIndex,:);
     %S.t0.X = S.t0.X(inliersIndex,:);
-    [R,T_transp] = relativeCameraPose(F,S.K,p0,p1);
+    [R,T_transp] = relativeCameraPose(E,S.K,p0,p1);
     T = T_transp';
     
     T_guess = [S.t0.Pose;zeros(1,3),1]*[R,T;zeros(1,3),1];
     S.t1.Pose = T_guess(1:3,1:4);
     
     %S = triangulateLandmarkslinear(S, K);
-    [S, running] = triLndCont(S,K,R,T, isBoot);
-    
-    if(~running)
-        return
+    if(isBoot==1)
+        [S, running] = triLndCont(S,K,R,T,freq_idx(inliersIndex),isBoot);
     end
     
     if (isBoot==0)
@@ -54,11 +54,18 @@ function [S, running] = estPose(S, K, isBoot)
         S.t1.Pose = T_new(1:3,1:4);
         
         % triangulate landmarks with correct camera position 
-        S = triLndCont(S,K,R,median_scale*T,isBoot);
         
-        % print messages
-        disp('Current R,T, current estimated Pose')
-        disp([R,T,S.t1.Pose])
+        [S, running] = triLndCont(S,K,R,median_scale*T,freq_idx(inliersIndex),isBoot);
+        
+       
     end
+    
+    if(~running)
+        return
+    end
+    
+     % print messages
+    disp('Current R,T, current estimated Pose')
+    disp([R,T,S.t1.Pose])
     
 end

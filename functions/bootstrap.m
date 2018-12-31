@@ -39,6 +39,9 @@ S.t0.Pose = eye(3,4);
 S.K = cameraParameters('IntrinsicMatrix',K');
 S.ti.Y = [];
 S.ti.X = [];
+S.ti.WX = [];
+S.ti.WY = [];
+S.ti.WZ = [];
 
 % 3.2 Establish keypoint correspondences
 success = true;
