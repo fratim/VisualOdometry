@@ -1,36 +1,47 @@
 % Parking Parameters
 
+
+global key_freq
+key_freq=3;
 %choose if new landmarks shall be detected (otherwise only running with
 %init landmarks)
 global detectNewLnd;
 detectNewLnd = true;
 %global rrscale, before any operation
 global cont_rescale
-cont_rescale = 0.25;
+cont_rescale = 1 ;%10.75;
 % Harris Kernel Size
 global HrKernel
-HrKernel = 7;
+HrKernel = 5;
 % HArris Rescale
 global HrScale
-HrScale = 1;
+HrScale = 0.5;
 % Harris Minimum Quality
 global HrQuality
 HrQuality = 0.01;
 % Minimum angle for new landmarks
 global MinAngle
 MinAngle = 1/180 * pi;
+% Feature Block Patch Size
+global BlockSize
+BlockSize = 17;
 % Maxima suppression (discard if image points are too close)
 global Suppression
+<<<<<<< HEAD
 Suppression = 2;
+=======
+Suppression = 1;
+>>>>>>> 95cf89605b1d3e8382a3c2aa0edfe8a8c387c64e
 % Featue Matching Threshold for triangulation of new landmarks
 global MatchThresholdCont
-MatchThresholdCont = 50;
+MatchThresholdCont = 60;
 %Feature MAtching Threshold for Initializaation
 global MatchThresholdInit
-MatchThresholdInit = 90;
+MatchThresholdInit = 60;
 %MAximum permitted reprojection Error (in Pixels??)
 global MaxReprojError
-MaxReprojError = 50;
+MaxReprojError = 30;
+>>>>>>> 95cf89605b1d3e8382a3c2aa0edfe8a8c387c64e
 %Minimum Points needed to continue execution, break otherwise
 global MinPoints
 MinPoints = 15;
@@ -41,18 +52,18 @@ global r_T
 r_T = 15;
 % max number of iterations
 global num_iters
-num_iters = 50;
+num_iters = 200;
 % max bidirectional error
 global lambda
-lambda = 0.1;
+lambda = 3;
 global numPyramids
-numPyramids = 3;
+numPyramids = 5;
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %RANSAC Parameters
 global NumTrials
 NumTrials = 5000;
 global DistanceThreshold
-DistanceThreshold = 0.01;
+DistanceThreshold = 5;
 global InlierPercentage
 InlierPercentage = 80;
 global Confidence

@@ -7,15 +7,17 @@ function S_data = contFt(S_data, img, K)
     global Suppression
     global MatchThresholdCont
     global MinAngle
+    global BlockSize
     
+    p_oo= [S_data.ti.X(:,4),S_data.ti.Y(:,4)];
     img = imresize(img, HrScale);
     points_new = detectHarrisFeatures(img,'MinQuality',HrQuality,'FilterSize',HrKernel);
-    
+    points_new = selectStrongest(points_new,1000);
     kpt_new_xy = double(points_new.Location/HrScale);
 
     % implement new keypoints and load old ones
     kpt_new_temp_xy = round(kpt_new_xy/Suppression);
-    kpt_old_temp_xy = round(fliplr(S_data.t1.P)./Suppression);
+    kpt_old_temp_xy = round(p_oo./Suppression);
 
     % find duplicates
     exist_set = ismembertol(kpt_new_temp_xy,kpt_old_temp_xy,'ByRows',2);
@@ -25,7 +27,7 @@ function S_data = contFt(S_data, img, K)
     kpt_new_xy = kpt_new_xy(nonexist_set,:);
 
     %extract features that belong to new keypoints (watch out for scale of image!!)
-    [features_new,kpt_new_temp] = extractFeatures(img,kpt_new_xy*HrScale);
+    [features_new,kpt_new_temp] = extractFeatures(img,kpt_new_xy*HrScale,'Method','Block','Blocksize',BlockSize);
     kpt_new_xy = kpt_new_temp/HrScale;
     
     if(~isempty(S_data.t1.F))
@@ -82,6 +84,8 @@ function S_data = contFt(S_data, img, K)
                     S_data.t1.P = [S_data.t1.P;fliplr(p2(j,:))]; % flip to get u v
                     S_data.t1.X = [S_data.t1.X;X(j,:)];
                     ldm_added = ldm_added +1;
+                    S_data.ti.X = [S_data.ti.X;[NaN NaN NaN p2(j,1)]];
+                    S_data.ti.Y = [S_data.ti.Y;[NaN NaN NaN p2(j,2)]];
                 end
             end
             %             

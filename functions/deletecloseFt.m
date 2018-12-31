@@ -8,7 +8,7 @@ global MinPoints
 
 running = true;
 
-keypoints = S.t1.P;
+keypoints = [S.ti.X(:,4),S.ti.Y(:,4)];
 
 %rescale 
 keypoints = keypoints./Suppression;
@@ -22,10 +22,14 @@ duplicate_ind = setdiff(1:size(keypoints, 1), ind);
 keep(duplicate_ind)=0;
 
 % delete keypoints and landmarkes that are discarded
-S.t1.P = S.t1.P(find(keep>0),:);
-S.t0.P = S.t0.P(find(keep>0),:);
+idx = find(keep>0);
+S.t1.P = S.t1.P(idx,:);
+S.t0.P = S.t0.P(idx,:);
+S.ti.X = S.ti.X(idx,:);
+S.ti.Y = S.ti.Y(idx,:);
+
 if(~isempty(S.t0.X)) 
-    S.t0.X = S.t0.X(find(keep>0),:);
+    %S.t0.X = S.t0.X(find(keep>0),:);
 end
 % break here if less than Minpoints keypoints are tracked
 if length(keep(keep>0)) < MinPoints

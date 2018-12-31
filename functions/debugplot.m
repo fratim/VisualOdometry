@@ -3,11 +3,13 @@ function debugplot(S, imga, imgb)
     % plot only specific points
     pplot = 1:length(S.t0.P(:,1));
     % pplot = [1,2,3,4];
-
+    
+    p_o = [S.ti.X(:,3) S.ti.Y(:,3)];
+    p_n = [S.ti.X(:,4) S.ti.Y(:,4)];
     subplot(1,2,1)
     imshow(imga)
     hold on
-    scatter(S.t0.P(pplot,2),S.t0.P(pplot,1),'red')
+    scatter(p_o(:,1),p_o(:,2),'red')
     % removed for computation reasons
     %title('img0 matched features')
 
@@ -15,7 +17,7 @@ function debugplot(S, imga, imgb)
     imshow(imgb)
     %plot matches
     hold on
-    scatter(S.t1.P(pplot,2),S.t1.P(pplot,1),'blue')
+    scatter(p_n(:,1),p_n(:,2),'blue')
     % removed for computation reasons
     %title('img1 matched features')
     
