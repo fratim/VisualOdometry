@@ -158,10 +158,10 @@ for i = range
     
         % debug
     if (debug==true)% && plot_index > (plot_freq+1))
-        debugplot(S, prev_image,image)
+        %debugplot(S, prev_image,image)
         p_o = [S.ti.X(:,3) S.ti.Y(:,3)];
         p_n = [S.ti.X(:,4) S.ti.Y(:,4)];
-        %showMatchedFeatures(prev_image,image,p_o,p_n)
+        showMatchedFeatures(prev_image,image,p_o,p_n)
         pause(0.01);
         plot_index = 0;
     end
