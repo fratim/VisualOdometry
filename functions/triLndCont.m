@@ -1,4 +1,4 @@
-function [S, running] = triLndCont(S,K,R,T, isBoot)
+function [S, running] = triLndCont(S,K,R,T,isBoot)
 
     global MaxReprojError
     global MinPoints
@@ -15,21 +15,21 @@ function [S, running] = triLndCont(S,K,R,T, isBoot)
     
     [worldP,reprojectionErrors] = triangulate(ptold,ptnew,stereoParams);
     
-    idx_keep = find(reprojectionErrors < MaxReprojError);
-    worldP = worldP(idx_keep,:);
+    %idx_keep = find(reprojectionErrors < MaxReprojError);
+    %worldP = worldP(idx_keep,:);
     
     % break here if less than 15 keypoints are tracked
-    if length(idx_keep(idx_keep>0)) < MinPoints
-        disp('Less than MinPoints points tracked, triangulation error too large!')
-        running = false;
-        return
-    end
+    %if length(idx_keep(idx_keep>0)) < MinPoints
+    %    disp('Less than MinPoints points tracked, triangulation error too large!')
+    %    running = false;
+    %    return
+    %end
     
     % discard according feature points and landmarks
-    S.t0.P = S.t0.P(idx_keep,:);
-    S.t1.P = S.t1.P(idx_keep,:);
-    if (isBoot == false)
-        S.t0.X = S.t0.X(idx_keep,:);
-    end
+    %S.t0.P = S.t0.P(idx_keep,:);
+    %S.t1.P = S.t1.P(idx_keep,:);
+    %if (isBoot == false)
+    %    S.t0.X = S.t0.X(idx_keep,:);
+    %end
     S.t1.X = worldP;
 end

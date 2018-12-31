@@ -3,7 +3,7 @@
 %choose if new landmarks shall be detected (otherwise only running with
 %init landmarks)
 global detectNewLnd;
-detectNewLnd = false;
+detectNewLnd = true;
 %global rrscale, before any operation
 global cont_rescale
 cont_rescale = 0.25;
@@ -21,7 +21,7 @@ global MinAngle
 MinAngle = 1/180 * pi;
 % Maxima suppression (discard if image points are too close)
 global Suppression
-Suppression = 10;
+Suppression = 2;
 % Featue Matching Threshold for triangulation of new landmarks
 global MatchThresholdCont
 MatchThresholdCont = 50;
@@ -30,7 +30,7 @@ global MatchThresholdInit
 MatchThresholdInit = 90;
 %MAximum permitted reprojection Error (in Pixels??)
 global MaxReprojError
-MaxReprojError = 2;
+MaxReprojError = 50;
 %Minimum Points needed to continue execution, break otherwise
 global MinPoints
 MinPoints = 15;
@@ -50,10 +50,10 @@ numPyramids = 3;
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %RANSAC Parameters
 global NumTrials
-NumTrials = 2000;
+NumTrials = 5000;
 global DistanceThreshold
-DistanceThreshold = 0.001;
+DistanceThreshold = 0.01;
 global InlierPercentage
-InlierPercentage = 60;
+InlierPercentage = 80;
 global Confidence
-Confidence = 99.99;
+Confidence = 99;

@@ -69,7 +69,6 @@ else
     assert(false);
 end
 
-
 %Bootstrapping 
 [S, success] = bootstrap(img0,img1,K);
 
@@ -116,6 +115,8 @@ S.t1.P = S.t1.P*cont_rescale;
 plot_freq = 1;
 plot_index = 6;
 
+keycounter = 0;
+
 %iterate through all frames from video
 for i = range
     
@@ -147,8 +148,9 @@ for i = range
         plot_index = 0;
     end
     
+    [height, width] = size(image);
     % Do tracking from last to new frame
-    [S,running] = contTra(pointTracker,S,prev_image,image,K);
+    [S,running] = contTra(pointTracker,S,prev_image,image,K,width,height);
 
     % Check if enough features are available
     if(~running)

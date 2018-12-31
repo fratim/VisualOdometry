@@ -42,7 +42,7 @@ S.K = cameraParameters('IntrinsicMatrix',K');
 success = true;
 
 % keypoint correspondences can be establisht either with HARRIS or SIFT
-[S, running] = kptHar(S, img0, img1);
+[S, running] = trial_kptHar(S, img0, img1);
 
 if(~running)
     success = false;
@@ -52,8 +52,9 @@ end
 keep = ones(length(S.t1.P),1);
 [S, running] = deletecloseFt(S, keep);
 
-% 3.3 Relative pose estimation and triangulation of landmarks, use RANSAC 
-[S, running] = estPose(S,K,1);
+% 3.3 Relative pose estimation and triangulation of landmarks, use RANSAC
+[height, width] = size(img0);
+[S, running] = estPose(S,K,1,width,height);
 
 if(~running)
     success = false;

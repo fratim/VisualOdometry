@@ -1,4 +1,4 @@
-function [S,running, scale_fac] = contTra(pointTracker,S,prev_image,image,K, scale_fac)
+function [S,running] = contTra(pointTracker,S,prev_image,image,K,width,height)
     
     global detectNewLnd
     
@@ -25,7 +25,7 @@ function [S,running, scale_fac] = contTra(pointTracker,S,prev_image,image,K, sca
     release(pointTracker);
     
     %Calculate pose
-    [S, running] = estPose(S,K,0);
+    [S, running] = estPose(S,K,0,width,height);
     
     if(running && detectNewLnd == true)
         %Get new features
