@@ -111,9 +111,9 @@ pointTracker = vision.PointTracker('NumPyramidLevels',numPyramids, ...
         'MaxBidirectionalError',lambda,'BlockSize',[bs,bs],'MaxIterations',num_iters);
 
 %take second bootstrap image for initialization
-prev_image = imresize(img1, cont_rescale);
-S.t0.P = S.t0.P*cont_rescale;
-S.t1.P = S.t1.P*cont_rescale;
+prev_image = img1;
+%S.t0.P = S.t0.P*cont_rescale;
+%S.t1.P = S.t1.P*cont_rescale;
 
 %plot eyery x images
 plot_freq = 1;
@@ -139,19 +139,13 @@ for i = range
     end
     
     %global rescale
-    image = imresize(image, cont_rescale);
+    %image = imresize(image, cont_rescale);
     
     % new timestep, therefore update S
     S.t0 = S.t1;
     S.ti.X(:,1:3)=S.ti.X(:,2:4);
     S.ti.Y(:,1:3)=S.ti.Y(:,2:4);
-    % debug
-    if (debug==true)% && plot_index > (plot_freq+1))
-        debugplot(S, prev_image,image)
-        %showMatchedFeatures(prev_image,image,fliplr(S.t0.P),fliplr(S.t1.P))
-        pause(0.01);
-        plot_index = 0;
-    end
+
     
     % Do tracking from last to new frame
 
@@ -160,6 +154,16 @@ for i = range
     % Check if enough features are available
     if(~running)
         break
+    end
+    
+        % debug
+    if (debug==true)% && plot_index > (plot_freq+1))
+        debugplot(S, prev_image,image)
+        p_o = [S.ti.X(:,3) S.ti.Y(:,3)];
+        p_n = [S.ti.X(:,4) S.ti.Y(:,4)];
+        %showMatchedFeatures(prev_image,image,p_o,p_n)
+        pause(0.01);
+        plot_index = 0;
     end
     
     % set previous image to current image, needed for next iteration
