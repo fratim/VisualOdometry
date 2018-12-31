@@ -27,7 +27,7 @@ function [S,running] = contTra(pointTracker,S,prev_image,image,K)
     release(pointTracker);
     
     %Calculate pose
-    [S, running] = estPose(S,K,0,width,height);
+    [S, running] = estPose(S,K,0);
     
     if(running && detectNewLnd == true)
         %Get new features

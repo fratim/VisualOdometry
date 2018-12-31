@@ -27,11 +27,7 @@ global BlockSize
 BlockSize = 17;
 % Maxima suppression (discard if image points are too close)
 global Suppression
-<<<<<<< HEAD
-Suppression = 2;
-=======
 Suppression = 1;
->>>>>>> 95cf89605b1d3e8382a3c2aa0edfe8a8c387c64e
 % Featue Matching Threshold for triangulation of new landmarks
 global MatchThresholdCont
 MatchThresholdCont = 60;
@@ -41,7 +37,6 @@ MatchThresholdInit = 60;
 %MAximum permitted reprojection Error (in Pixels??)
 global MaxReprojError
 MaxReprojError = 30;
->>>>>>> 95cf89605b1d3e8382a3c2aa0edfe8a8c387c64e
 %Minimum Points needed to continue execution, break otherwise
 global MinPoints
 MinPoints = 15;
