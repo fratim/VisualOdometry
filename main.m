@@ -121,6 +121,8 @@ plot_index = 6;
 
 keycounter = 0;
 
+land_hist=zeros(20,1);
+traj=[];
 %iterate through all frames from video
 for i = range
     
@@ -156,13 +158,17 @@ for i = range
         break
     end
     
+    traj = [traj; S.t1.Pose(1:3,4)'];
+    land_hist(1:19)=land_hist(2:20);
+    land_hist(20)= size(S.t1.X,1);
         % debug
     if (debug==true)% && plot_index > (plot_freq+1))
         %debugplot(S, prev_image,image)
         p_o = [S.ti.X(:,3) S.ti.Y(:,3)];
         p_n = [S.ti.X(:,4) S.ti.Y(:,4)];
-        showMatchedFeatures(prev_image,image,p_o,p_n)
-        pause(0.01);
+        %showMatchedFeatures(prev_image,image,p_o,p_n)
+        pause(0.01);      
+        plot_frame(S,traj,land_hist,image);
         plot_index = 0;
     end
     
