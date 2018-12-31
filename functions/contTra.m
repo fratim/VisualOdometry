@@ -31,6 +31,6 @@ function [S,running] = contTra(pointTracker,S,prev_image,image,K)
     
     if(running && detectNewLnd == true)
         %Get new features
-        S = contFt(S,image,K);
+        %S = contFt(S,image,K);
     end
 end

@@ -1,18 +1,27 @@
-function [S, running] = triLndCont(S,K,R,T,isBoot)
+function [S, running] = triLndCont(S,K,R,T,idx,isBoot)
+
 
     global MaxReprojError
     global MinPoints
-
+    
     running = true;
     
     % K inverse to meet matlab convention
     cameraParams = S.K;
     stereoParams = stereoParameters(cameraParams,cameraParams,...
-                                    R,-T);
-    ptold = [S.ti.X(:,1) S.ti.Y(:,2)];
-    ptnew = [S.ti.X(:,4) S.ti.Y(:,4)];
+                                    R,T);
+    ptold = [S.ti.X(idx,1) S.ti.Y(idx,1)];
+    ptnew = [S.ti.X(idx,4) S.ti.Y(idx,4)];
     
     [worldP,reprojectionErrors] = triangulate(ptold,ptnew,stereoParams);
+    
+    idx_keep = find(reprojectionErrors < MaxReprojError);
+    worldP = worldP(idx_keep,:);
+    outliersIndex = idx(find(reprojectionErrors > MaxReprojError));
+    stay_idx = setdiff(1:size(S.ti.X,1),outliersIndex);
+    S.ti.X = S.ti.X(stay_idx,:);
+    S.ti.Y = S.ti.Y(stay_idx,:);
+    
     %horizon_idx = find(abs(worldP(:,3))<80);
     
     %ptold = ptold(horizon_idx,:);
@@ -20,9 +29,16 @@ function [S, running] = triLndCont(S,K,R,T,isBoot)
     %S.t0.P=S.t0.P(horizon_idx,:);
     %S.t1.P=S.t1.P(horizon_idx,:);
     
-    %idx_keep = find(reprojectionErrors < MaxReprojError);
+    %[worldP,reprojectionErrors] = triangulate(ptold,ptnew,stereoParams);
+    %
     %worldP = worldP(idx_keep,:);
-    
+    % break here if less than 15 keypoints are tracked
+    if length(idx_keep) < MinPoints
+        disp('Less than MinPoints points tracked, triangulation error too large!')
+        running = false;
+        return
+    end
+
     % break here if less than 15 keypoints are tracked
     %if length(idx_keep(idx_keep>0)) < MinPoints
     %    disp('Less than MinPoints points tracked, triangulation error too large!')
