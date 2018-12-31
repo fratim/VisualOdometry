@@ -1,4 +1,5 @@
 function [S,running] = contTra(pointTracker,S,prev_image,image,K)
+
     
     global detectNewLnd
     

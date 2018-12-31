@@ -13,7 +13,7 @@ function X = triLndNew(p1,p2,P1,P2,cameraParams)
     %attempt: discard landmarks and according keypoitns, if reprojection
     %error is large (is this in pixels?) just trying with 1, looks fine
     %problem: some points are still projected behind the damn camera
-    idx_keep = find(reprojectionErrors < MaxReprojError);
-    X = worldP(idx_keep,:);
+    %idx_keep = find(reprojectionErrors < MaxReprojError);
+    X = worldP;
    
 end

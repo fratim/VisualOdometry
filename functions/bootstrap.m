@@ -71,6 +71,7 @@ end
 
 keep = ones(length(S.t1.P),1);
 [S, running] = deletecloseFt(S, keep);
+
 p_o = [S.ti.X(:,1) S.ti.Y(:,2)];
 p_n = [S.ti.X(:,4) S.ti.Y(:,4)];
 showMatchedFeatures(img0,img1,p_o,p_n)  

@@ -1,12 +1,15 @@
-function [S, running] = estPose(S, K, isBoot)
+function [S, running] = estPose(S,K,isBoot)
     
     global NumTrials
     global DistanceThreshold
     global InlierPercentage
     global Confidence
 
+    running = true;
+        
     % inliersIndex and status can be used for debugging, no use in normal
     % mode
+    
     idx_1=find(~isnan(S.ti.X(:,1)));
     idx_2=find(~isnan(S.ti.X(:,2)));
     idx_3=find(~isnan(S.ti.X(:,3)));
@@ -50,6 +53,7 @@ function [S, running] = estPose(S, K, isBoot)
 %         scales = distances_old./distances_new;
 %         median_scale = median(scales);
         median_scale = 1;
+        
         T_new = [S.t0.Pose;zeros(1,3),1]*[R,median_scale*T;zeros(1,3),1];
         S.t1.Pose = T_new(1:3,1:4);
         

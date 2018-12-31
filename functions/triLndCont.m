@@ -1,5 +1,6 @@
 function [S, running] = triLndCont(S,K,R,T,idx,isBoot)
 
+
     global MaxReprojError
     global MinPoints
     
@@ -37,8 +38,14 @@ function [S, running] = triLndCont(S,K,R,T,idx,isBoot)
         running = false;
         return
     end
-    
-    % discard according feature points and landmarks
+
+    % break here if less than 15 keypoints are tracked
+    %if length(idx_keep(idx_keep>0)) < MinPoints
+    %    disp('Less than MinPoints points tracked, triangulation error too large!')
+    %    running = false;
+    %    return
+    %end
+
 %     S.t0.P = S.t0.P(idx_keep,:);
 %     S.t1.P = S.t1.P(idx_keep,:);
 %     S.ti.X = S.ti.X(idx_keep,:);

@@ -56,7 +56,7 @@ numPyramids = 5;
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %RANSAC Parameters
 global NumTrials
-NumTrials = 100000;
+NumTrials = 5000;
 global DistanceThreshold
 DistanceThreshold = 5;
 global InlierPercentage
