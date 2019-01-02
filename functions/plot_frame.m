@@ -16,16 +16,25 @@ function [] = plot_frame(S,traj,land_hist,frame)
     pos3 = [0.05 0.6 0.4 0.4];
     subplot('Position',pos3)
     imshow(frame)
+    hold on
+    scatter(S.t1.P(:,1),S.t1.P(:,2))
+    hold off
     title('Current Frame')
     
     pos4 = [0.55 0.05 0.4 0.9];
     subplot('Position',pos4)
     if(length(traj)>20)
         plot(0,0)
+        scatter(S.t1.X(:,1),S.t1.X(:,3))       
+        hold on
         plot(traj(end-20:end,1),traj(end-20:end,3),'*')
+        hold off
     else
         disp('jo')
-        plot(traj(:,1),traj(:,3),'*')
+        scatter(S.t1.X(:,1),S.t1.X(:,3))
+        hold on
+        plot(traj(:,1),traj(:,3),'*')       
+        hold off
         
     end
     axis equal

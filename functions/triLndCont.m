@@ -1,5 +1,4 @@
-function [S, running] = triLndCont(S,K,R,T,idx,isBoot)
-
+function [p0,p1,X,running] = triLndCont(S,R,T,p0,p1)
 
     global MaxReprojError
     global MinPoints
@@ -8,50 +7,38 @@ function [S, running] = triLndCont(S,K,R,T,idx,isBoot)
     
     % K inverse to meet matlab convention
     cameraParams = S.K;
-    stereoParams = stereoParameters(cameraParams,cameraParams,...
-                                    R,T);
-    ptold = [S.ti.X(idx,1) S.ti.Y(idx,1)];
-    ptnew = [S.ti.X(idx,4) S.ti.Y(idx,4)];
     
-    [worldP,reprojectionErrors] = triangulate(ptold,ptnew,stereoParams);
+    %Strange Camera matrix shit for matlab (see documentation of
+    %cameraMatrix)
+    R_c = R';
+    T_c = -T*R_c;
     
-    idx_keep = find(reprojectionErrors < MaxReprojError);
-    worldP = worldP(idx_keep,:);
-    outliersIndex = idx(find(reprojectionErrors > MaxReprojError));
-    stay_idx = setdiff(1:size(S.ti.X,1),outliersIndex);
-    S.ti.X = S.ti.X(stay_idx,:);
-    S.ti.Y = S.ti.Y(stay_idx,:);
+    camM1 = cameraMatrix(S.K,eye(3),[0 0 0]);
+    camM2 = cameraMatrix(S.K,R_c,T_c);
     
-    %horizon_idx = find(abs(worldP(:,3))<80);
+    %Triangulate points
+    [worldP,reprojectionErrors] = triangulate(p0,p1,camM1,camM2);
     
-    %ptold = ptold(horizon_idx,:);
-    %ptnew = ptnew(horizon_idx,:);
-    %S.t0.P=S.t0.P(horizon_idx,:);
-    %S.t1.P=S.t1.P(horizon_idx,:);
+    %Reject outliers
+    idx_keep = find(reprojectionErrors < MaxReprojError);    
+    X = worldP(idx_keep,:);
+    p0 = p0(idx_keep,:);
+    p1 = p1(idx_keep,:);
+    %Reject points triangulated behind camera
+    idx_keep = find(X(:,3)>0);
+    X = X(idx_keep,:);
+    p0 = p0(idx_keep,:);
+    p1 = p1(idx_keep,:);
+    %Reject points that are too far away
+    idx_keep = find(X(:,3)<50);
+    X = X(idx_keep,:);
+    p0 = p0(idx_keep,:);
+    p1 = p1(idx_keep,:);
     
-    %[worldP,reprojectionErrors] = triangulate(ptold,ptnew,stereoParams);
-    %
-    %worldP = worldP(idx_keep,:);
     % break here if less than 15 keypoints are tracked
     if length(idx_keep) < MinPoints
         disp('Less than MinPoints points tracked, triangulation error too large!')
         running = false;
         return
     end
-
-    % break here if less than 15 keypoints are tracked
-    %if length(idx_keep(idx_keep>0)) < MinPoints
-    %    disp('Less than MinPoints points tracked, triangulation error too large!')
-    %    running = false;
-    %    return
-    %end
-
-%     S.t0.P = S.t0.P(idx_keep,:);
-%     S.t1.P = S.t1.P(idx_keep,:);
-%     S.ti.X = S.ti.X(idx_keep,:);
-%     S.ti.Y = S.ti.Y(idx_keep,:);
-    if (isBoot == false)
-        %S.t0.X = S.t0.X(idx_keep,:);
-    end
-    S.t1.X = worldP;
 end

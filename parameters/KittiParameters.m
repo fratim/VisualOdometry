@@ -9,7 +9,7 @@ global detectNewLnd;
 detectNewLnd = true;
 %global rescale, before any operation
 global cont_rescale
-cont_rescale = 1 ;%10.75;
+cont_rescale = 0.5 ;%10.75;
 % Harris Kernel Size
 global HrKernel
 HrKernel = 5;
@@ -36,7 +36,7 @@ global MatchThresholdInit
 MatchThresholdInit = 90;
 %MAximum permitted reprojection Error (in Pixels??)
 global MaxReprojError
-MaxReprojError = 90;
+MaxReprojError = 10;
 %Minimum Points needed to continue execution, break otherwise
 global MinPoints
 MinPoints = 15;
@@ -50,15 +50,15 @@ global num_iters
 num_iters = 1000;
 % max bidirectional error
 global lambda
-lambda = 2;
+lambda = 1;
 global numPyramids
-numPyramids = 10;
+numPyramids = 5;
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %RANSAC Parameters
 global NumTrials
 NumTrials = 5000;
 global DistanceThreshold
-DistanceThreshold = 5;
+DistanceThreshold = 10;
 global InlierPercentage
 InlierPercentage = 80;
 global Confidence

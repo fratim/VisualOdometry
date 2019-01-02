@@ -145,13 +145,13 @@ for i = range
     
     % new timestep, therefore update S
     S.t0 = S.t1;
-    S.ti.X(:,1:3)=S.ti.X(:,2:4);
-    S.ti.Y(:,1:3)=S.ti.Y(:,2:4);
+    %S.ti.X(:,1:3)=S.ti.X(:,2:4);
+    %S.ti.Y(:,1:3)=S.ti.Y(:,2:4);
 
     
     % Do tracking from last to new frame
 
-    [S,running] = contTra(pointTracker,S,prev_image,image,K);
+    [S,running] = contTra(pointTracker,S,prev_image,image);
 
     % Check if enough features are available
     if(~running)
@@ -164,8 +164,8 @@ for i = range
         % debug
     if (debug==true)% && plot_index > (plot_freq+1))
         %debugplot(S, prev_image,image)
-        p_o = [S.ti.X(:,3) S.ti.Y(:,3)];
-        p_n = [S.ti.X(:,4) S.ti.Y(:,4)];
+        %p_o = [S.ti.X(:,3) S.ti.Y(:,3)];
+        %p_n = [S.ti.X(:,4) S.ti.Y(:,4)];
         %showMatchedFeatures(prev_image,image,p_o,p_n)
         pause(0.01);      
         plot_frame(S,traj,land_hist,image);

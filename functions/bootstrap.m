@@ -44,22 +44,28 @@ S.ti.X = [];
 S.ti.WX = [];
 S.ti.WY = [];
 S.ti.WZ = [];
-
+S.ti.Pose = [];
 % 3.2 Establish keypoint correspondences
 success = true;
 
-% keypoint correspondences can be establisht either with HARRIS or SIFT
+% keypoint correspondences can be established either with HARRIS or SIFT
 
-for i=1:size(imgs,1)-1
-    S.t0.P=S.t1.P;
-    img0 = cell2mat(imgs(i));
-    img1 = cell2mat(imgs(i+1));
-    if(i==1)
-        [S, running] = kptHar(S, img0, img1,1);
-    else
-        [S, running] = kptHar(S, img0, img1,0);
-    end
-end
+% for i=1:size(imgs,1)-1
+%     S.t0.P=S.t1.P;
+%     img0 = cell2mat(imgs(i));
+%     img1 = cell2mat(imgs(i+1));
+%     if(i==1)
+%         [S, running] = kptHar(S, img0, img1,1);
+%     else
+%         [S, running] = kptHar(S, img0, img1,0);
+%     end
+% end
+
+img0 = cell2mat(imgs(1));
+img1 = cell2mat(imgs(4));
+
+%Get matches from frame 1 to 4
+[S, running] = kptHar(S, img0, img1,1);
 
 if(~running)
     success = false;
@@ -69,16 +75,18 @@ end
 keep = ones(length(S.t1.P),1);
 [S, running] = deletecloseFt(S, keep);
 
-p_o = [S.ti.X(:,1) S.ti.Y(:,1)];
-p_n = [S.ti.X(:,4) S.ti.Y(:,4)];
-showMatchedFeatures(img0,img1,p_o,p_n) 
+%p_o = [S.ti.X(:,1) S.ti.Y(:,1)];
+%p_n = [S.ti.X(:,4) S.ti.Y(:,4)];
+showMatchedFeatures(img0,img1,S.t0.P,S.t1.P) 
 
 % 3.3 Relative pose estimation and triangulation of landmarks, use RANSAC 
 %S.ti.P = S.t0.P;
 %S.ti.X = S.t0.X;
 
-[S, running] = estPose(S,K,1);
-
+[S, running] = estPose(S,1);
+%pose_0 = reshape(S.t0.Pose,[1,12]);
+%pose_1 = reshape(S.t1.Pose,[1,12]);
+%S.ti.Pose=[pose_0;pose_0;pose_0;pose_1];
 if(~running)
     success = false;
     return
