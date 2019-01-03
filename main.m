@@ -143,14 +143,14 @@ for i = range
     %global rescale
     %image = imresize(image, cont_rescale);
     
+    disp(['new iteration, points tracked: ',num2str(length(S.t1.P))]);
+    
     % new timestep, therefore update S
     S.t0 = S.t1;
     %S.ti.X(:,1:3)=S.ti.X(:,2:4);
     %S.ti.Y(:,1:3)=S.ti.Y(:,2:4);
-
     
     % Do tracking from last to new frame
-
     [S,running] = contTra(pointTracker,S,prev_image,image);
 
     % Check if enough features are available
@@ -161,7 +161,7 @@ for i = range
     traj = [traj; S.t1.Pose(1:3,4)'];
     land_hist(1:19)=land_hist(2:20);
     land_hist(20)= size(S.t1.X,1);
-        % debug
+    % debug
     if (debug==true)% && plot_index > (plot_freq+1))
         %debugplot(S, prev_image,image)
         %p_o = [S.ti.X(:,3) S.ti.Y(:,3)];

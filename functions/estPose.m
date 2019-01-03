@@ -4,6 +4,7 @@ function [S, running] = estPose(S,isBoot)
     global DistanceThreshold
     global InlierPercentage
     global Confidence
+    global MaxReprojErrorCameraPose
 
     running = true;
     
@@ -14,13 +15,15 @@ function [S, running] = estPose(S,isBoot)
     else
         %Calculate current pose from world landmarks and correspondences
         [R,T_t,inliersIdx] = estimateWorldCameraPose(...
-            S.t1.P,S.t1.X,S.K);
+            S.t1.P,S.t1.X,S.K,'MaxReprojectionError',MaxReprojErrorCameraPose);
         
         %Reject outliers
         S.t1.P=S.t1.P(inliersIdx,:);
         S.t0.P=S.t0.P(inliersIdx,:);
         S.t1.X=S.t1.X(inliersIdx,:);
         S.t1.Pose=[R,T_t'];
+        
+        disp(['points after estimateWorldCameraPose: ',num2str(length(S.t1.P))]);
     end
     
 

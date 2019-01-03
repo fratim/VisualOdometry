@@ -1,9 +1,6 @@
-function [p0,p1,X,running] = triLndCont(S,R,T,p0,p1)
+function [p0,p1,X] = triLnd(S,R,T,p0,p1,firstPose)
 
     global MaxReprojError
-    global MinPoints
-    
-    running = true;
     
     %Strange Camera matrix shit for matlab (see documentation of
     %cameraMatrix)
@@ -14,14 +11,12 @@ function [p0,p1,X,running] = triLndCont(S,R,T,p0,p1)
     camM2 = cameraMatrix(S.K,R_c,T_c);
     
     %correct pose
-    
     %Triangulate points
     [worldP,reprojectionErrors] = triangulate(p0,p1,camM1,camM2);
     
-    %transform points back into original coorinate system
-    %hacking
-    T_mat = [eye(3), S.t0.Pose(1:3,4); zeros(1,3) 1];
-    worldP_temp = inv(T_mat)*[worldP';ones(1,length(worldP))];
+    %transform points back into original coorinate system    
+    T_mat = [firstPose; zeros(1,3) 1];
+    worldP_temp = inv(T_mat)*[worldP';ones(1,size(worldP,1))];
     worldP = worldP_temp(1:3,:)';
     
     %Reject outliers
@@ -40,11 +35,5 @@ function [p0,p1,X,running] = triLndCont(S,R,T,p0,p1)
     p0 = p0(idx_keep,:);
     p1 = p1(idx_keep,:);
     
-    % break here if less than 15 keypoints are tracked
-    if length(idx_keep) < MinPoints
-        disp('Less than MinPoints points tracked, triangulation error too large!')
-        running = false;
-        return
-    end
     
 end

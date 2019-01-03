@@ -14,12 +14,14 @@ function [S,running] = contTra(pointTracker,S,prev_image,image)
 
     %point tracking
     [keypoints,keep] = pointTracker(track_img);
-    keep_idx = find(keep>0);
-    %flip to get y,x
     S.t1.P = double(keypoints)/cont_rescale;
+    
+    disp(['points after KLT: ',num2str(length(find(keep>0)))]);
     
     % how to choose, which keypoint to delete, if they are close together?
     [S, running] = deletecloseFt(S, keep); 
+    
+    disp(['points after deletecloseFt: ',num2str(length(S.t1.P))]);
     
     %release point tracker, such that keypoints are only used from frame to
     %frame
@@ -30,6 +32,6 @@ function [S,running] = contTra(pointTracker,S,prev_image,image)
     
     if(running && detectNewLnd == true)
         %Get new features
-        %S = contFt(S,image,K);
+        S = contFt(S,image);
     end
 end

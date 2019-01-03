@@ -1,6 +1,8 @@
 % Parking Parameters
 
-
+% MAx reprojection error used for camera pose estimateion function
+global MaxReprojErrorCameraPose
+MaxReprojErrorCameraPose = 5;
 global key_freq
 key_freq = 3;
 %choose if new landmarks shall be detected (otherwise only running with
@@ -21,7 +23,7 @@ global HrQuality
 HrQuality = 0.001;
 % Minimum angle for new landmarks
 global MinAngle
-MinAngle = 0.1/180 * pi;
+MinAngle = 0.25/180 * pi;
 % Feature Block Patch Size
 global BlockSize
 BlockSize = 17;
@@ -42,13 +44,13 @@ global MinPoints
 MinPoints = 15;
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %Parameters for KLT
-% patch radius
+%patch radius
 global r_T
 r_T = 15;
 % max number of iterations
 global num_iters
 num_iters = 1000;
-% max bidirectional error
+%max bidirectional error
 global lambda
 lambda = 1;
 global numPyramids
@@ -58,7 +60,7 @@ numPyramids = 5;
 global NumTrials
 NumTrials = 5000;
 global DistanceThreshold
-DistanceThreshold = 10;
+DistanceThreshold = 1;
 global InlierPercentage
 InlierPercentage = 80;
 global Confidence

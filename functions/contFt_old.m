@@ -1,5 +1,8 @@
-function S_data = contFt(S_data, img, K)
+function S = contFt(S, img)
     
+
+    %alles auf uv ccordinates
+
     %load parameters, given in this script
     global HrQuality
     global HrKernel
@@ -9,7 +12,7 @@ function S_data = contFt(S_data, img, K)
     global MinAngle
     global BlockSize
     
-    p_oo= [S_data.ti.X(:,4),S_data.ti.Y(:,4)];
+    p_oo= [S.ti.X(:,4),S.ti.Y(:,4)];
     img = imresize(img, HrScale);
     points_new = detectHarrisFeatures(img,'MinQuality',HrQuality,'FilterSize',HrKernel);
     points_new = selectStrongest(points_new,1000);
@@ -30,26 +33,26 @@ function S_data = contFt(S_data, img, K)
     [features_new,kpt_new_temp] = extractFeatures(img,kpt_new_xy*HrScale,'Method','Block','Blocksize',BlockSize);
     kpt_new_xy = kpt_new_temp/HrScale;
     
-    if(~isempty(S_data.t1.F))
+    if(~isempty(S.t1.F))
         
         % load old features
-        features_old = S_data.t1.F;
+        features_old = S.t1.F;
         
         %match features
         indexPairs = matchFeatures(features_new,features_old,'MatchThreshold',MatchThresholdCont,'Unique',true);
  
         %find according image coordinates
         kpt_matched_new_xy = double(kpt_new_xy);
-        kpt_matched_old_xy = double(S_data.t1.C);
+        kpt_matched_old_xy = double(S.t1.C);
         
         %Find different feature starting points
-        U = unique(S_data.t1.T,'rows');
+        U = unique(S.t1.T,'rows');
 
         ldm_added = 0;
         %Check the angle criterium
         for i=1:size(U,1)
             %Cluster different feature starting points 
-            u_temp = ismember(S_data.t1.T,U(i,:),'rows');
+            u_temp = ismember(S.t1.T,U(i,:),'rows');
             u_temp = find(u_temp==1); 
 
             %Get intersection of clustered and matched points
@@ -62,10 +65,10 @@ function S_data = contFt(S_data, img, K)
             p1 = kpt_matched_old_xy(idx_o,:);
             p2 = kpt_matched_new_xy(idx_n,:);
             P1 = reshape(U(i,:),[3,4]);
-            P2 = S_data.t1.Pose;
+            P2 = S.t1.Pose;
 
             %Triangulate matched candidates
-            X = triLndNew(p1,p2,P1,P2,S_data.K);
+            X = triLndNew(p1,p2,P1,P2,S.K);
 
             if(isempty(X))
                 continue
@@ -81,38 +84,38 @@ function S_data = contFt(S_data, img, K)
 
                 %Add features that fulfill criterium
                 if(abs(alpha)>MinAngle)
-                    S_data.t1.P = [S_data.t1.P;fliplr(p2(j,:))]; % flip to get u v
-                    S_data.t1.X = [S_data.t1.X;X(j,:)];
+                    S.t1.P = [S.t1.P;fliplr(p2(j,:))]; % flip to get u v
+                    S.t1.X = [S.t1.X;X(j,:)];
                     ldm_added = ldm_added +1;
-                    S_data.ti.X = [S_data.ti.X;[NaN NaN NaN p2(j,1)]];
-                    S_data.ti.Y = [S_data.ti.Y;[NaN NaN NaN p2(j,2)]];
+                    S.ti.X = [S.ti.X;[NaN NaN NaN p2(j,1)]];
+                    S.ti.Y = [S.ti.Y;[NaN NaN NaN p2(j,2)]];
                 end
             end
             %             
         end
         
         % Remove lost features (take only the matched ones)
-        S_data.t1.F = S_data.t1.F(indexPairs(:,2),:);
-        S_data.t1.C = S_data.t1.C(indexPairs(:,2),:);
-        S_data.t1.T = S_data.t1.T(indexPairs(:,2),:);
+        S.t1.F = S.t1.F(indexPairs(:,2),:);
+        S.t1.C = S.t1.C(indexPairs(:,2),:);
+        S.t1.T = S.t1.T(indexPairs(:,2),:);
  
         % Add new Features that were not matched with old ones
         new_feat_ind = setdiff(1:size(kpt_new_xy,1),indexPairs(:,1));
-        S_data.t1.F = [S_data.t1.F;features_new(new_feat_ind,:)];
-        S_data.t1.C = [S_data.t1.C;kpt_new_xy(new_feat_ind,:)];
-        T_add = repmat(reshape(S_data.t1.Pose,[1,12]),size(new_feat_ind,2),1);
-        S_data.t1.T = [S_data.t1.T;T_add];
+        S.t1.F = [S.t1.F;features_new(new_feat_ind,:)];
+        S.t1.C = [S.t1.C;kpt_new_xy(new_feat_ind,:)];
+        T_add = repmat(reshape(S.t1.Pose,[1,12]),size(new_feat_ind,2),1);
+        S.t1.T = [S.t1.T;T_add];
         
-        disp([  'features tracked: ', num2str(length(S_data.t0.X)),' //landmarks added: ',...
+        disp([  'features tracked: ', num2str(length(S.t0.X)),' //landmarks added: ',...
                 num2str(ldm_added), ' //candidates added: ', num2str(length(new_feat_ind(new_feat_ind>0)))])
         
         
     %Initial features
     else
-        S_data.t1.F = [S_data.t1.F;features_new];
-        S_data.t1.C = [S_data.t1.C;kpt_new_xy];
-        T_add = repmat(reshape(S_data.t1.Pose,[1,12]),size(kpt_new_xy,1),1);
-        S_data.t1.T = [S_data.t1.T;T_add];
+        S.t1.F = [S.t1.F;features_new];
+        S.t1.C = [S.t1.C;kpt_new_xy];
+        T_add = repmat(reshape(S.t1.Pose,[1,12]),size(kpt_new_xy,1),1);
+        S.t1.T = [S.t1.T;T_add];
     end
    
 end

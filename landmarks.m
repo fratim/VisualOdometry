@@ -9,6 +9,16 @@ function [p0,p1,X,running] = landmarks(S,p0,p1,Pose_0)
     [F,inliersIndex,status] = estimateFundamentalMatrix(p0,...
     p1,'Method','RANSAC',...
     'NumTrials',NumTrials,'DistanceThreshold',DistanceThreshold);
+
+    inlierpercentage = length(find(inliersIndex>0))/length(p0);
+    
+    S.t1.P=S.t1.P(inliersIndex,:);
+    S.t0.P=S.t0.P(inliersIndex,:);
+    if(~isempty(S.t1.X))
+        S.t1.X=S.t1.X(inliersIndex,:);
+    end
+    disp(['inlier [%] estimateFM: ',num2str(inlierpercentage)]);
+    disp(['points after estimateFM: ',num2str(length(S.t1.P))]);
     
     %Reject outliers
     inliersIndex = find(inliersIndex>0);
