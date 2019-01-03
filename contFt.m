@@ -49,7 +49,7 @@ function S = contFt(S, img, K)
 
         % start i at 3, so at least 2 pictures difference
         %Check the angle criterium
-        for i=2:size(U,1)
+        for i=1:size(U,1)
             %Cluster different feature starting points 
             u_temp = ismember(S.t1.T,U(i,:),'rows');
             u_temp = find(u_temp==1); 
@@ -87,8 +87,6 @@ function S = contFt(S, img, K)
                 if(abs(alpha)>MinAngle)
                     S.t1.P = [S.t1.P;p2(j,:)]; % flip to get u v
                     S.t1.X = [S.t1.X;X(j,:)];
-                    p2(j,:)
-                    X(j,:)
                 end
             end
             %             

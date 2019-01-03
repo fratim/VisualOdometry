@@ -15,7 +15,8 @@ function [S, running] = estPose(S,isBoot)
     else
         %Calculate current pose from world landmarks and correspondences
         [R,T_t,inliersIdx] = estimateWorldCameraPose(...
-            S.t1.P,S.t1.X,S.K,'MaxReprojectionError',MaxReprojErrorCameraPose);
+            S.t1.P,S.t1.X,S.K,'MaxReprojectionError',...
+            MaxReprojErrorCameraPose,'MaxNumTrials',NumTrials);
         
         %Reject outliers
         S.t1.P=S.t1.P(inliersIdx,:);

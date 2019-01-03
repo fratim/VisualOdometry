@@ -29,6 +29,7 @@ S.t0.P = S.t0.P(idx,:);
 if(~isempty(S.t1.X)) 
     %S.t0.X = S.t0.X(find(keep>0),:);
     S.t1.X = S.t1.X(idx,:);
+    S.t0.X = S.t0.X(idx,:);
 end
 % break here if less than Minpoints keypoints are tracked
 if length(keep(keep>0)) < MinPoints
