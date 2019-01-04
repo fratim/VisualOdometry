@@ -104,7 +104,7 @@ function S = contFt(S, img, K)
         
         kptadd = 100;
         
-        if (length(newP)>kptadd && length(S.t1.P > 100))
+        if (length(newP)>kptadd && length(S.t1.P)>100)
             newP = newP(Idx_sorted(1:kptadd),:);
             newX = newX(Idx_sorted(1:kptadd),:);
         end
