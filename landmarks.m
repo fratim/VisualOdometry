@@ -8,7 +8,8 @@ function [p0,p1,X,running] = landmarks(S,p0,p1,Pose_0)
     %Calculate Fundamental matrix and inliers
     [F,inliersIndex,status] = estimateFundamentalMatrix(p0,...
     p1,'Method','RANSAC',...
-    'NumTrials',NumTrials,'DistanceThreshold',DistanceThreshold);
+    'NumTrials',NumTrials,'DistanceThreshold',DistanceThreshold,...
+    'InlierPercentage',InlierPercentage);
 
     inlierpercentage = length(find(inliersIndex>0))/length(p0);
     
