@@ -2,7 +2,7 @@
 
 % MAx reprojection error used for camera pose estimateion function
 global MaxReprojErrorCameraPose
-MaxReprojErrorCameraPose = 10;
+MaxReprojErrorCameraPose = 3;
 global key_freq
 key_freq = 3;
 %choose if new landmarks shall be detected (otherwise only running with
@@ -11,10 +11,10 @@ global detectNewLnd;
 detectNewLnd = true;
 %global rescale, before any operation
 global cont_rescale
-cont_rescale = 0.5 ;%10.75;
+cont_rescale = 1 ;%10.75;
 % Harris Kernel Size
 global HrKernel
-HrKernel = 5;
+HrKernel = 11;
 % HArris Rescale
 global HrScale
 HrScale = 0.75;
@@ -29,7 +29,7 @@ global BlockSize
 BlockSize = 17;
 % Maxima suppression (discard if image points are too close)
 global Suppression
-Suppression = 1;
+Suppression = 11;
 % Featue Matching Threshold for triangulation of new landmarks
 global MatchThresholdCont
 MatchThresholdCont = 90;
@@ -58,7 +58,7 @@ numPyramids = 5;
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %RANSAC Parameters
 global NumTrials
-NumTrials = 5000;
+NumTrials = 10000;
 global DistanceThreshold
 DistanceThreshold = 0.5;
 global InlierPercentage

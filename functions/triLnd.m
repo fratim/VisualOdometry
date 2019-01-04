@@ -17,9 +17,14 @@ function [p0,p1,X] = triLnd(S,R,T,p0,p1,firstPose)
         X = [];
         return
     end
+    
     p0=p0(inliersIndex,:);
     p1=p1(inliersIndex,:);
+    
     inlierpercentage = length(find(inliersIndex>0))/length(p0);
+    
+    disp(['inliers in estFund of triLnd: ', num2str(inlierpercentage)]);
+    
     %Strange Camera matrix shit for matlab (see documentation of
     %cameraMatrix)
     R_c = R';

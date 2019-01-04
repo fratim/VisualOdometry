@@ -18,10 +18,20 @@ function [S, running] = estPose(S,isBoot)
             S.t1.P,S.t1.X,S.K,'MaxReprojectionError',...
             MaxReprojErrorCameraPose,'MaxNumTrials',NumTrials);
         
+        inlierpercentage = length(find(inliersIdx>0))/length(inliersIdx);
+        disp(['inliers in estFund of estWorldCamera: ', num2str(inlierpercentage)]);
+        
+        inliers = find(inliersIdx>0);
+        outliers = find(inliersIdx==0);
+        
+        keep = 0.65;
+        
+        inliers = [inliers; outliers(1:round(length(outliers)*keep))];
+        
         %Reject outliers
-        S.t1.P=S.t1.P(inliersIdx,:);
-        S.t0.P=S.t0.P(inliersIdx,:);
-        S.t1.X=S.t1.X(inliersIdx,:);
+        S.t1.P=S.t1.P(inliers,:);
+        S.t0.P=S.t0.P(inliers,:);
+        S.t1.X=S.t1.X(inliers,:);
         S.t1.Pose=[R,T_t'];
         
         disp(['points after estimateWorldCameraPose: ',num2str(length(S.t1.P))]);

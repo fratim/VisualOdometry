@@ -3,16 +3,15 @@ function S = contFt(S, img, K)
     %load parameters, given in this script
     global HrQuality
     global HrKernel
-    global HrScale
     global Suppression
     global MatchThresholdCont
     global MinAngle
     global BlockSize
     
-    img = imresize(img, HrScale);
     points_new = detectHarrisFeatures(img,'MinQuality',HrQuality,'FilterSize',HrKernel);
     
-    kpt_new = double(points_new.Location/HrScale);
+    kpt_new = double(points_new.Location);
+    kpt_new_quality = points_new.Metric;
 
     % implement new keypoints and load old ones
     kpt_new_temp = round(kpt_new/Suppression);
@@ -23,11 +22,12 @@ function S = contFt(S, img, K)
     nonexist_set = find(exist_set==0);
 
     % discard keypoints that are already a landmark (already exist)
-    kpt_new = kpt_new(nonexist_set,:);
-
+    kpt_new = points_new(nonexist_set,:);
+    
     %extract features that belong to new keypoints (watch out for scale of image!!)
-    [features_new,kpt_new_temp] = extractFeatures(img,kpt_new*HrScale,'Method','Block','Blocksize',BlockSize);
-    kpt_new = kpt_new_temp/HrScale;
+    [features_new,kpt_new_temp] = extractFeatures(img,kpt_new,'Method','Block','Blocksize',BlockSize);
+    kpt_new = kpt_new_temp.Location;
+    kpt_new_quality = kpt_new_temp.Metric;
     
     if(~isempty(S.t1.F))
         
@@ -46,7 +46,11 @@ function S = contFt(S, img, K)
         
         %Find different feature starting points
         U = unique(S.t1.T,'rows');
-
+        
+        %new features and landmarks to be added to S.t1.P and S.t1.X
+        newP = [];
+        newX = [];
+        newQuality = [];
         % start i at 3, so at least 2 pictures difference
         %Check the angle criterium
         for i=1:size(U,1)
@@ -63,6 +67,7 @@ function S = contFt(S, img, K)
 
             p1 = kpt_matched_old_xy(idx_o,:);
             p2 = kpt_matched_new_xy(idx_n,:);
+            kp_quality = kpt_new_quality(idx_n);
             P1 = reshape(U(i,:),[3,4]);
             P2 = S.t1.Pose;
 
@@ -85,12 +90,27 @@ function S = contFt(S, img, K)
 
                 %Add features that fulfill criterium
                 if(abs(alpha)>MinAngle)
-                    S.t1.P = [S.t1.P;p2(j,:)]; % flip to get u v
-                    S.t1.X = [S.t1.X;X(j,:)];
+                    newP = [newP;p2(j,:)]; % flip to get u v
+                    newX = [newX;X(j,:)];
+                    newQuality = [newQuality; double(kp_quality(j))];
                 end
             end
             %             
         end
+        
+        [Quality_sorted,Idx_sorted] = sort(newQuality,'descend');
+        
+        % add only 50 strongest keypoints in ech interation
+        
+        kptadd = 100;
+        
+        if (length(newP)>kptadd && length(S.t1.P > 100))
+            newP = newP(Idx_sorted(1:kptadd),:);
+            newX = newX(Idx_sorted(1:kptadd),:);
+        end
+            
+        S.t1.P = [S.t1.P; newP];
+        S.t1.X = [S.t1.X; newX];
         
         % Remove lost features (take only the matched ones)
         S.t1.F = S.t1.F(indexPairs(:,2),:);
