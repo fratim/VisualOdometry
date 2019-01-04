@@ -27,11 +27,25 @@ function [p0,p1,X] = triLnd(S,R,T,p0,p1,firstPose)
     
     %Strange Camera matrix shit for matlab (see documentation of
     %cameraMatrix)
+    R_n = S.t1.Pose(1:3,1:3);
+    T_n = S.t1.Pose(1:3,4)';
+    
+    R_o = firstPose(1:3,1:3);
+    T_o = firstPose(1:3,4)';
+    
+    R_0= R_o';
+    T_0= -T_o*R_0;
+   
+    R_1= R_n';
+    T_1= -T_n*R_1;
+    
     R_c = R';
     T_c = -T*R_c;
     
-    camM1 = cameraMatrix(S.K,eye(3),[0 0 0]);
-    camM2 = cameraMatrix(S.K,R_c,T_c);
+%     camM1 = cameraMatrix(S.K,eye(3),[0 0 0]);
+%     camM2 = cameraMatrix(S.K,R_c,T_c);
+    camM1 = cameraMatrix(S.K,R_0,T_0);
+    camM2 = cameraMatrix(S.K,R_1,T_1);
     
     %correct pose
     %Triangulate points
@@ -40,20 +54,20 @@ function [p0,p1,X] = triLnd(S,R,T,p0,p1,firstPose)
     worldP = worldP(idx_keep,:);
     p0=p0(idx_keep,:);
     p1=p1(idx_keep,:);
-    idx_keep = find(worldP(:,3)>0);
-    worldP = worldP(idx_keep,:);
-    p0=p0(idx_keep,:);
-    p1=p1(idx_keep,:);
+%     idx_keep = find(worldP(:,3)>0);
+%     worldP = worldP(idx_keep,:);
+%     p0=p0(idx_keep,:);
+%     p1=p1(idx_keep,:);
     %idx_keep = find(worldP(:,3)<40);
     %worldP = worldP(idx_keep,:);
     %p0=p0(idx_keep,:);
     %p1=p1(idx_keep,:);
     
     %transform points back into original coorinate system    
-    T_mat = [firstPose; zeros(1,3) 1];
-    
-    worldP_temp = T_mat*[worldP';ones(1,size(worldP,1))];
-    worldP = worldP_temp(1:3,:)';
+%     T_mat = [firstPose; zeros(1,3) 1];
+%     
+%     worldP_temp = T_mat*[worldP';ones(1,size(worldP,1))];
+%     worldP = worldP_temp(1:3,:)';
     X=worldP;
     %Reject outliers
        

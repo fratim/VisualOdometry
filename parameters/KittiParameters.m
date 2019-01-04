@@ -2,7 +2,7 @@
 
 % MAx reprojection error used for camera pose estimateion function
 global MaxReprojErrorCameraPose
-MaxReprojErrorCameraPose = 3;
+MaxReprojErrorCameraPose = 10;
 global key_freq
 key_freq = 3;
 %choose if new landmarks shall be detected (otherwise only running with
@@ -14,7 +14,7 @@ global cont_rescale
 cont_rescale = 1 ;%10.75;
 % Harris Kernel Size
 global HrKernel
-HrKernel = 11;
+HrKernel = 9;
 % HArris Rescale
 global HrScale
 HrScale = 0.75;
@@ -60,7 +60,7 @@ numPyramids = 5;
 global NumTrials
 NumTrials = 10000;
 global DistanceThreshold
-DistanceThreshold = 0.5;
+DistanceThreshold = 1;
 global InlierPercentage
 InlierPercentage = 80;
 global Confidence

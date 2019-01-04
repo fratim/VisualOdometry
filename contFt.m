@@ -14,8 +14,8 @@ function S = contFt(S, img, K)
     kpt_new_quality = points_new.Metric;
 
     % implement new keypoints and load old ones
-    kpt_new_temp = round(kpt_new/Suppression);
-    kpt_old_temp = round(S.t1.P./Suppression);
+    kpt_new_temp = round(kpt_new);
+    kpt_old_temp = round(S.t1.P);
 
     % find duplicates
     exist_set = ismembertol(kpt_new_temp,kpt_old_temp,'ByRows',2);
@@ -102,9 +102,9 @@ function S = contFt(S, img, K)
         
         % add only 50 strongest keypoints in ech interation
         
-        kptadd = 100;
+        kptadd = 300;
         
-        if (length(newP)>kptadd && length(S.t1.P)>100)
+        if (length(newP)>kptadd && length(S.t1.P)>kptadd)
             newP = newP(Idx_sorted(1:kptadd),:);
             newX = newX(Idx_sorted(1:kptadd),:);
         end

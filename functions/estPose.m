@@ -26,7 +26,7 @@ function [S, running] = estPose(S,isBoot)
         
         keep = 0.65;
         
-        inliers = [inliers; outliers(1:round(length(outliers)*keep))];
+        %inliers = [inliers; outliers(1:round(length(outliers)*keep))];
         
         %Reject outliers
         S.t1.P=S.t1.P(inliers,:);
