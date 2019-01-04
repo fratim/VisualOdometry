@@ -4,7 +4,7 @@ clc
 addpath(genpath('.'));
 
 %% Setup
-ds = 0; % 0: KITTI, 1: Malaga, 2: parking
+ds = 1; % 0: KITTI, 1: Malaga, 2: parking
 debug = true;
 kitti_path = 'kitti';
 malaga_path = 'malaga-urban-dataset-extract-07';
@@ -54,13 +54,15 @@ if ds == 0
         imgs = [imgs;{img}];
     end
 elseif ds == 1
-    bootstrap_frames = [1,3];
-    img0 = rgb2gray(imread([malaga_path ...
-        '/malaga-urban-dataset-extract-07_rectified_800x600_Images/' ...
-        left_images(bootstrap_frames(1)).name]));
-    img1 = rgb2gray(imread([malaga_path ...
-        '/malaga-urban-dataset-extract-07_rectified_800x600_Images/' ...
-        left_images(bootstrap_frames(2)).name]));
+    imgs = [];
+    bootstrap_frames = [0,3];
+    for i=bootstrap_frames(1):bootstrap_frames(2) 
+        img = rgb2gray(imread([malaga_path ...
+            '/malaga-urban-dataset-extract-07_rectified_800x600_Images/' ...
+            left_images(i+1).name]));
+        imgs = [imgs;{img}];
+    end
+
 elseif ds == 2
     bootstrap_frames = [0,4];
     img0 = rgb2gray(imread([parking_path ...
