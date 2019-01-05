@@ -29,7 +29,7 @@ global BlockSize
 BlockSize = 17;
 % Maxima suppression (discard if image points are too close)
 global Suppression
-Suppression = 11;
+Suppression = 13;
 % Featue Matching Threshold for triangulation of new landmarks
 global MatchThresholdCont
 MatchThresholdCont = 90;
