@@ -25,7 +25,8 @@ function [S, success] =  bootstrap(imgs, K)%% Initialization of Pose and Landmar
 %S = struct('P_t1',{},'X_t1',{},'C_t1',{})
 S.t1.P = [];
 S.t1.X = [];
-S.t1.C = [];
+S.t1.C = []; %first appreance
+S.t1.CC = []; %current position
 S.t1.F = [];
 S.t1.T = [];
 S.t1.Pose = [];
@@ -33,18 +34,13 @@ S.t1.Pose = [];
 S.t0.P = [];
 S.t0.X = [];
 S.t0.C = [];
+S.t0.CC = [];
 S.t0.F = [];
 S.t0.T = [];
 S.t0.Pose = eye(3,4);
 
 S.K = cameraParameters('IntrinsicMatrix',K');
 
-S.ti.Y = [];
-S.ti.X = [];
-S.ti.WX = [];
-S.ti.WY = [];
-S.ti.WZ = [];
-S.ti.Pose = [];
 % 3.2 Establish keypoint correspondences
 success = true;
 
