@@ -2,8 +2,8 @@ function [S] = enforceBlocks(S,xmax,ymax)
 %UNTITLED Summary of this function goes here
 %   Detailed explanation goes here
 
-nBlocksX = 10; %blocksize in Px
-nBlocksY = 3;
+nBlocksX = 15; %blocksize in Px
+nBlocksY = 5;
 
 blockSizeX = floor(xmax/nBlocksX);
 blockSizeY = floor(ymax/nBlocksY);

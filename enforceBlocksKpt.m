@@ -2,8 +2,8 @@ function [newP, newX] = enforceBlocksKpt(newP, newX, newQuality,kpt_needed, xmax
 %UNTITLED Summary of this function goes here
 %   Detailed explanation goes here
 
-nBlocksX = 1; %blocksize in Px
-nBlocksY = 1;
+nBlocksX = 15; %blocksize in Px
+nBlocksY = 5;
 
 blockSizeX = floor(xmax/nBlocksX);
 blockSizeY = floor(ymax/nBlocksY);

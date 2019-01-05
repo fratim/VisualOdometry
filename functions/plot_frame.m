@@ -20,7 +20,7 @@ function [] = plot_frame(S,traj,land_hist,frame)
     imshow(frame)
     hold on
     scatter(S.t1.P(:,1),S.t1.P(:,2))
-    %plot(S.t1.C(:,1),S.t1.C(:,2),'rx')
+    plot(S.t1.CC(:,1),S.t1.CC(:,2),'rx')
     hold off
     title('Current Frame')
     

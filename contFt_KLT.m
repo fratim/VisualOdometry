@@ -5,7 +5,7 @@ function S = contFt_KLT(S,img)
     global HrKernel
     global MinAngle
     global BlockSize
-    
+    global Suppression
     %needed for grid adding of keypoints
     [ymax,xmax] = size(img);
     
@@ -13,16 +13,28 @@ function S = contFt_KLT(S,img)
     kpt_new = double(points_new.Location);
 
     % implement new keypoints and load old ones
-    kpt_new_temp = round(kpt_new);
-    kpt_old_temp = round(S.t1.P);
+    kpt_new_temp = round(kpt_new./Suppression);
+    kpt_old_temp = round(S.t1.P./Suppression);
 
-    % find duplicates
-    exist_set = ismembertol(kpt_new_temp,kpt_old_temp,'ByRows',2);
+    % find duplicates of new corners
+    exist_set = ismember(kpt_new_temp,kpt_old_temp,'rows');
     nonexist_set = find(exist_set==0);
 
-    % discard keypoints that are already a landmark (already exist)
+    % discard new features that are already a landmark (already exist)
     kpt_new = points_new(nonexist_set,:);
     
+    if(length(S.t1.CC>0))
+        kpt_cand_temp = round(S.t1.CC./Suppression);
+        % find duplicates of candidates
+        exist_set = ismember(kpt_cand_temp,kpt_old_temp,'rows');
+        nonexist_set = find(exist_set==0);
+
+        % discard candidates that are already a landmark (already exist)
+        S.t1.CC = S.t1.CC(nonexist_set,:);
+        S.t1.C = S.t1.C(nonexist_set,:);
+        S.t1.F = S.t1.F(nonexist_set,:);
+        S.t1.T = S.t1.T(nonexist_set,:);
+    end
     %extract features that belong to new keypoints (watch out for scale of image!!)
     %need feature extraction to determine uality of points
     [features_new,kpt_new_temp] = extractFeatures(img,kpt_new,'Method','Block','Blocksize',BlockSize);
@@ -99,7 +111,7 @@ function S = contFt_KLT(S,img)
         
         % add only 50 strongest keypoints in ech interation
         kptmax = 300;
-        kptaddalways = 30;
+        kptaddalways = 00;
         
         if(length(newP)<=kptaddalways)
             %just add all keypoints avaliable
