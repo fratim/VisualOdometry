@@ -3,8 +3,10 @@ function [] = plot_frame(S,traj,land_hist,frame)
     set(gcf, 'Position',  [100, 100, 960, 540])
     pos1 = [0.05 0.05 0.2 0.4];
     subplot('Position',pos1)
+    position_x = S.t1.Pose(1,4);
+    position_z = S.t1.Pose(1,4);
+    axis([position_x-40 position_x+40 position_z-40 position_z+40]) %this does not seem to have any effect
     plot(-19:1:0,land_hist)
-    axis([-20 0 0 400])
     title('# Tracked landmarks of last 20 frames')
     
     pos2 = [0.3 0.05 0.2 0.4];
