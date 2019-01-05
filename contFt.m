@@ -15,8 +15,8 @@ function S = contFt(S, img, K)
     kpt_new_quality = points_new.Metric;
 
     % implement new keypoints and load old ones
-    kpt_new_temp = round(kpt_new);
-    kpt_old_temp = round(S.t1.P);
+    kpt_new_temp = round(kpt_new)/Suppression;
+    kpt_old_temp = round(S.t1.P)/Suppression;
 
     % find duplicates
     exist_set = ismembertol(kpt_new_temp,kpt_old_temp,'ByRows',2);

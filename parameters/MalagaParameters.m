@@ -14,7 +14,7 @@ global cont_rescale
 cont_rescale = 1 ;%10.75;
 % Harris Kernel Size
 global HrKernel
-HrKernel = 9;
+HrKernel = 5;
 % HArris Rescale
 global HrScale
 HrScale = 0.75;
@@ -29,10 +29,10 @@ global BlockSize
 BlockSize = 17;
 % Maxima suppression (discard if image points are too close)
 global Suppression
-Suppression = 10;
+Suppression = 30;
 % Featue Matching Threshold for triangulation of new landmarks
 global MatchThresholdCont
-MatchThresholdCont = 90;
+MatchThresholdCont = 50;
 %Feature MAtching Threshold for Initializaation
 global MatchThresholdInit
 MatchThresholdInit = 90;
@@ -67,4 +67,4 @@ global Confidence
 Confidence = 99;
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 global kptadd
-kptadd = 300;
+kptadd = 100;
