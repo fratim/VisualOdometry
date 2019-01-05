@@ -6,25 +6,6 @@ function [p0,p1,X] = triLnd(S,R,T,p0,p1,firstPose)
     global InlierPercentage
     global Confidence
     
-    %Calculate Fundamental matrix and inliers
-    try
-    [F,inliersIndex,status] = estimateFundamentalMatrix(p0,...
-    p1,'Method','RANSAC',...
-    'NumTrials',NumTrials,'DistanceThreshold',DistanceThreshold);
-    catch 
-        p0=[];
-        p1=[];
-        X = [];
-        return
-    end
-    
-    p0=p0(inliersIndex,:);
-    p1=p1(inliersIndex,:);
-    
-    inlierpercentage = length(find(inliersIndex>0))/length(p0);
-    
-    disp(['inliers in estFund of triLnd: ', num2str(inlierpercentage)]);
-    
     %Strange Camera matrix shit for matlab (see documentation of
     %cameraMatrix)
     R_n = S.t1.Pose(1:3,1:3);
@@ -42,45 +23,33 @@ function [p0,p1,X] = triLnd(S,R,T,p0,p1,firstPose)
     R_c = R';
     T_c = -T*R_c;
     
-%     camM1 = cameraMatrix(S.K,eye(3),[0 0 0]);
-%     camM2 = cameraMatrix(S.K,R_c,T_c);
     camM1 = cameraMatrix(S.K,R_0,T_0);
     camM2 = cameraMatrix(S.K,R_1,T_1);
     
     %correct pose
     %Triangulate points
     [worldP,reprojectionErrors] = triangulate(p0,p1,camM1,camM2);
-    idx_keep = find(reprojectionErrors < MaxReprojError); 
-    worldP = worldP(idx_keep,:);
-    p0=p0(idx_keep,:);
-    p1=p1(idx_keep,:);
-%     idx_keep = find(worldP(:,3)>0);
-%     worldP = worldP(idx_keep,:);
-%     p0=p0(idx_keep,:);
-%     p1=p1(idx_keep,:);
-    %idx_keep = find(worldP(:,3)<40);
-    %worldP = worldP(idx_keep,:);
-    %p0=p0(idx_keep,:);
-    %p1=p1(idx_keep,:);
+    keep = reprojectionErrors < MaxReprojError; 
     
-    %transform points back into original coorinate system    
-%     T_mat = [firstPose; zeros(1,3) 1];
-%     
-%     worldP_temp = T_mat*[worldP';ones(1,size(worldP,1))];
-%     worldP = worldP_temp(1:3,:)';
+    %delete points behind camera or that are too far away
+    %find transform to current camera pose coordinate system
+    T = [S.t1.Pose;zeros(1,3),1];
+    worldP_cameraframe = inv(T)*[worldP';ones(1,size(worldP,1))];
+    worldP_cameraframe = worldP_cameraframe(1:3,:)';
+    
+    %z bigger than 0
+    keep(find(worldP_cameraframe(:,3)<0))=0;
+    
+    % distance in z smaller than 40
+    keep(find(worldP_cameraframe(:,3)>40))=0;
+    
+    %only keep points that meet criteria
+    worldP = worldP(keep,:);
+    p0=p0(keep,:);
+    p1=p1(keep,:);
+    
     X=worldP;
-    %Reject outliers
-       
-%     X = worldP(idx_keep,:);
-%     p0 = p0(idx_keep,:);
-%     p1 = p1(idx_keep,:);
-%     %Reject points triangulated behind camera
-%     
-%     %Reject points that are too far away
-%     idx_keep = find(X(:,3)<50);
-%     X = X(idx_keep,:);
-%     p0 = p0(idx_keep,:);
-%     p1 = p1(idx_keep,:);
-    
+   
+
     
 end
