@@ -1,16 +1,15 @@
-function S = contFt(S, img, K)
+function S = contFt_KLT(S,img)
     
     %load parameters, given in this script
     global HrQuality
     global HrKernel
-    global Suppression
-    global MatchThresholdCont
     global MinAngle
     global BlockSize
-    global kptadd
+    
+    %needed for grid adding of keypoints
+    [ymax,xmax] = size(img);
     
     points_new = detectHarrisFeatures(img,'MinQuality',HrQuality,'FilterSize',HrKernel);
-    
     kpt_new = double(points_new.Location);
 
     % implement new keypoints and load old ones
@@ -25,20 +24,25 @@ function S = contFt(S, img, K)
     kpt_new = points_new(nonexist_set,:);
     
     %extract features that belong to new keypoints (watch out for scale of image!!)
+    %need feature extraction to determine uality of points
     [features_new,kpt_new_temp] = extractFeatures(img,kpt_new,'Method','Block','Blocksize',BlockSize);
-    kpt_new = kpt_new_temp.Location;
+    kpt_new = double(kpt_new_temp.Location);
     kpt_new_quality = kpt_new_temp.Metric;
     
-    if(~isempty(S.t1.F))
+    kpt_new_needed = 50;
+    
+    [kpt_new,kpt_new_quality] = enforceBlocksKptNew(kpt_new,kpt_new_quality,kpt_new_needed, xmax, ymax);
+    
+    if(~isempty(S.t1.CC))
         
         % load old features
-        features_old = S.t1.F;
+        %features_old = S.t1.F;
         
         %match features
-        indexPairs = matchFeatures(features_new,features_old,'MatchThreshold',MatchThresholdCont,'Unique',true);
+        %indexPairs = matchFeatures(features_new,features_old,'MatchThreshold',MatchThresholdCont,'Unique',true);
  
         %find according image coordinates
-        kpt_matched_new_xy = double(kpt_new);
+        kpt_matched_new_xy = double(S.t1.CC);
         kpt_matched_old_xy = double(S.t1.C);
         
         % plot on new picture 
@@ -57,17 +61,11 @@ function S = contFt(S, img, K)
             %Cluster different feature starting points 
             u_temp = ismember(S.t1.T,U(i,:),'rows');
             u_temp = find(u_temp==1); 
-
-            %Get intersection of clustered and matched points
-            [C,i_k,i_u] = intersect(indexPairs(:,2),u_temp);
-
-            %Get indices for old and new points
-            idx_o = indexPairs(i_k,2);
-            idx_n = indexPairs(i_k,1);
-
-            p1 = kpt_matched_old_xy(idx_o,:);
-            p2 = kpt_matched_new_xy(idx_n,:);
-            kp_quality = kpt_new_quality(idx_n);
+            
+            %load keypoints and other stuff
+            p1 = kpt_matched_old_xy(u_temp,:);
+            p2 = kpt_matched_new_xy(u_temp,:);
+            kp_quality = S.t1.F;
             P1 = reshape(U(i,:),[3,4]);
             P2 = S.t1.Pose;
 
@@ -98,12 +96,10 @@ function S = contFt(S, img, K)
             %             
         end
         
-        %needed for grid adding of keypoints
-        [ymax,xmax] = size(img);
         
         % add only 50 strongest keypoints in ech interation
-        kptmax = 1000;
-        kptaddalways = 500;
+        kptmax = 300;
+        kptaddalways = 30;
         
         if(length(newP)<=kptaddalways)
             %just add all keypoints avaliable
@@ -125,24 +121,22 @@ function S = contFt(S, img, K)
             
         S.t1.P = [S.t1.P; newP];
         S.t1.X = [S.t1.X; newX];
-        
-        % Remove lost features (take only the matched ones)
-        S.t1.F = S.t1.F(indexPairs(:,2),:);
-        S.t1.C = S.t1.C(indexPairs(:,2),:);
-        S.t1.T = S.t1.T(indexPairs(:,2),:);
  
         % Add new Features that were not matched with old ones
-        new_feat_ind = setdiff(1:size(kpt_new,1),indexPairs(:,1));
-        S.t1.F = [S.t1.F;features_new(new_feat_ind,:)];
-        S.t1.C = [S.t1.C;kpt_new(new_feat_ind,:)];
-        T_add = repmat(reshape(S.t1.Pose,[1,12]),size(new_feat_ind,2),1);
+        S.t1.F = [S.t1.F;kpt_new_quality];
+        S.t1.C = [S.t1.C;kpt_new];
+        S.t1.CC = [S.t1.CC;kpt_new];
+        T_add = repmat(reshape(S.t1.Pose,[1,12]),size(kpt_new,1),1);
         S.t1.T = [S.t1.T;T_add];
+        
+        disp(['Candidate points: ', num2str(length(S.t1.C))]);
         
         
     %Initial features
     else
-        S.t1.F = [S.t1.F;features_new];
+        S.t1.F = [S.t1.F;double(kpt_new_quality)];
         S.t1.C = [S.t1.C;kpt_new];
+        S.t1.CC = [S.t1.CC;kpt_new];
         T_add = repmat(reshape(S.t1.Pose,[1,12]),size(kpt_new,1),1);
         S.t1.T = [S.t1.T;T_add];
     end

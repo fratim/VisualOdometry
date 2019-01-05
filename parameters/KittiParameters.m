@@ -54,7 +54,7 @@ num_iters = 1000;
 global lambda
 lambda = 1;
 global numPyramids
-numPyramids = 5;
+numPyramids = 10;
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %RANSAC Parameters
 global NumTrials
@@ -65,6 +65,3 @@ global InlierPercentage
 InlierPercentage = 80;
 global Confidence
 Confidence = 99;
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-global kptadd
-kptadd = 300;
