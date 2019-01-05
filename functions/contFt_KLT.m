@@ -41,7 +41,7 @@ function S = contFt_KLT(S,img)
     kpt_new = double(kpt_new_temp.Location);
     kpt_new_quality = kpt_new_temp.Metric;
     
-    kpt_new_needed = 50;
+    kpt_new_needed = 100;
     
     [kpt_new,kpt_new_quality] = enforceBlocksKptNew(kpt_new,kpt_new_quality,kpt_new_needed, xmax, ymax);
     

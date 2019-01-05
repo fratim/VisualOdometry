@@ -4,7 +4,7 @@ clc
 addpath(genpath('.'));
 
 %% Setup
-ds = 1; % 0: KITTI, 1: Malaga, 2: parking
+ds = 0; % 0: KITTI, 1: Malaga, 2: parking
 debug = true;
 kitti_path = 'kitti';
 malaga_path = 'malaga-urban-dataset-extract-07';
