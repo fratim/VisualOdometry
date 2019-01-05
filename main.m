@@ -64,11 +64,13 @@ elseif ds == 1
     end
 
 elseif ds == 2
-    bootstrap_frames = [0,4];
-    img0 = rgb2gray(imread([parking_path ...
-        sprintf('/images/img_%05d.png',bootstrap_frames(1))]));
-    img1 = rgb2gray(imread([parking_path ...
-        sprintf('/images/img_%05d.png',bootstrap_frames(2))]));
+    imgs = [];
+    bootstrap_frames = [0,3];
+    for i=bootstrap_frames(1):bootstrap_frames(2) 
+        img = rgb2gray(imread([parking_path ...
+            sprintf('/images/img_%05d.png',i)]));
+        imgs = [imgs;{img}];
+    end
 else
     assert(false);
 end

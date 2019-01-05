@@ -20,9 +20,9 @@ function [p0,p1,X,running] = triLndCont(S,R,T,p0,p1)
     
     %transform points back into original coorinate system
     %hacking
-    T_mat = [eye(3), S.t0.Pose(1:3,4); zeros(1,3) 1];
-    worldP_temp = T_mat*[worldP';ones(1,length(worldP))];
-    worldP = worldP_temp(1:3,:)';
+    %T_mat = [eye(3), S.t0.Pose(1:3,4); zeros(1,3) 1];
+    %worldP_temp = T_mat*[worldP';ones(1,length(worldP))];
+    %worldP = worldP_temp(1:3,:)';
     
     %Reject outliers
     idx_keep = find(reprojectionErrors < MaxReprojError);    
@@ -35,7 +35,7 @@ function [p0,p1,X,running] = triLndCont(S,R,T,p0,p1)
     p0 = p0(idx_keep,:);
     p1 = p1(idx_keep,:);
     %Reject points that are too far away
-    idx_keep = find(X(:,3)<90);
+    idx_keep = find(X(:,3)<200);
     X = X(idx_keep,:);
     p0 = p0(idx_keep,:);
     p1 = p1(idx_keep,:);

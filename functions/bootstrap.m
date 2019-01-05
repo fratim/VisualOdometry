@@ -74,16 +74,17 @@ end
 
 keep = ones(length(S.t1.P),1);
 [S, running] = deletecloseFt(S, keep);
-
+showMatchedFeatures(img0,img1,S.t0.P,S.t1.P) 
 %p_o = [S.ti.X(:,1) S.ti.Y(:,1)];
 %p_n = [S.ti.X(:,4) S.ti.Y(:,4)];
-showMatchedFeatures(img0,img1,S.t0.P,S.t1.P) 
+
 
 % 3.3 Relative pose estimation and triangulation of landmarks, use RANSAC 
 %S.ti.P = S.t0.P;
 %S.ti.X = S.t0.X;
 
 [S, running] = estPose(S,1);
+showMatchedFeatures(img0,img1,S.t0.P,S.t1.P) 
 %pose_0 = reshape(S.t0.Pose,[1,12]);
 %pose_1 = reshape(S.t1.Pose,[1,12]);
 %S.ti.Pose=[pose_0;pose_0;pose_0;pose_1];

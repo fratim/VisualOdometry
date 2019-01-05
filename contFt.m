@@ -7,6 +7,7 @@ function S = contFt(S, img, K)
     global MatchThresholdCont
     global MinAngle
     global BlockSize
+    global kptadd
     
     points_new = detectHarrisFeatures(img,'MinQuality',HrQuality,'FilterSize',HrKernel);
     
@@ -102,7 +103,7 @@ function S = contFt(S, img, K)
         
         % add only 50 strongest keypoints in ech interation
         
-        kptadd = 300;
+        
         
         if (length(newP)>kptadd && length(S.t1.P)>kptadd)
             newP = newP(Idx_sorted(1:kptadd),:);

@@ -65,3 +65,6 @@ global InlierPercentage
 InlierPercentage = 80;
 global Confidence
 Confidence = 99;
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+global kptadd
+kptadd = 300;
