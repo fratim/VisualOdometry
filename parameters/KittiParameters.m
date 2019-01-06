@@ -11,13 +11,13 @@ global detectNewLnd;
 detectNewLnd = true;
 %global rescale, before any operation
 global cont_rescale
-cont_rescale = 1 ;%10.75;
+cont_rescale = 0.5 ;%10.75;
 % Harris Kernel Size
 global HrKernel
 HrKernel = 9;
 % HArris Rescale
 global HrScale
-HrScale = 0.75;
+HrScale = 1;
 % Harris Minimum Quality
 global HrQuality
 HrQuality = 0.001;
@@ -29,7 +29,7 @@ global BlockSize
 BlockSize = 17;
 % Maxima suppression (discard if image points are too close)
 global Suppression
-Suppression = 13;
+Suppression = 25;
 % Featue Matching Threshold for triangulation of new landmarks
 global MatchThresholdCont
 MatchThresholdCont = 90;
@@ -38,7 +38,7 @@ global MatchThresholdInit
 MatchThresholdInit = 90;
 %MAximum permitted reprojection Error (in Pixels??)
 global MaxReprojError
-MaxReprojError = 2;
+MaxReprojError = 3;
 %Minimum Points needed to continue execution, break otherwise
 global MinPoints
 MinPoints = 15;

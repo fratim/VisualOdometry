@@ -30,7 +30,11 @@ function S = contFt_KLT(S,img)
     kpt_new = double(kpt_new_temp.Location);
     kpt_new_quality = kpt_new_temp.Metric;
     
-    kpt_new_needed = 100;
+    kpt_new_needed = 5;
+    
+    if(length(S.t1.P)<150)
+        kpt_new_needed = 150;
+    end
     
     [kpt_new,kpt_new_quality] = enforceBlocksKptNew(kpt_new,kpt_new_quality,kpt_new_needed, xmax, ymax);
     
@@ -61,7 +65,7 @@ function S = contFt_KLT(S,img)
         for i=1:size(U,1)
             %Cluster different feature starting points 
             u_temp = ismember(S.t1.T,U(i,:),'rows');
-            u_temp = find(u_temp==1); 
+            u_temp = find(u_temp==1);
             
             %load keypoints and other stuff
             p1 = kpt_matched_old_xy(u_temp,:);
@@ -73,8 +77,33 @@ function S = contFt_KLT(S,img)
             R = P1(1:3,1:3)'*P2(1:3,1:3);
             T = (P2(1:3,4)-P1(1:3,4))';
             %Triangulate matched candidates
-            [p1,p2,X] = triLnd(S,R,T,p1,p2,P1);
-
+            
+            blockSize = 50;
+            
+            if(length(p1)>blockSize)
+                p1_triang = [];
+                p2_triang = [];
+                X = [];
+                npoints = length(p1);
+                nblocks = floor(npoints/blockSize);
+                for k = 1:nblocks
+                    if(blockSize*k>length(p1))
+                        p1_temp = p1(blockSize*k-blockSize+1:end,:);
+                        p2_temp = p1(blockSize*k-blockSize+1:end,:);
+                    else   
+                        p1_temp = p1(blockSize*k-blockSize+1:blockSize*k,:);
+                        p2_temp = p1(blockSize*k-blockSize+1:blockSize*k,:);
+                    end
+                    
+                    [p1_temp,p2_temp,X_temp] = triLnd(S,R,T,p1_temp,p2_temp,P1);
+                    p1_triang = [p1_triang;p1_temp];
+                    p2_triang = [p2_triang;p2_temp];
+                    X = [X;X_temp];
+                end
+            else
+            [p1_triang,p2_triang,X] = triLnd(S,R,T,p1,p2,P1);
+            end
+            
             if(isempty(X))
                 continue
             end
@@ -89,7 +118,7 @@ function S = contFt_KLT(S,img)
 
                 %Add features that fulfill criterium
                 if(abs(alpha)>MinAngle)
-                    newP = [newP;p2(j,:)]; % flip to get u v
+                    newP = [newP;p2_triang(j,:)]; % flip to get u v
                     newX = [newX;X(j,:)];
                     newQuality = [newQuality; double(kp_quality(j))];
                 end
@@ -99,8 +128,8 @@ function S = contFt_KLT(S,img)
         
         
         % add only 50 strongest keypoints in ech interation
-        kptmax = 300;
-        kptaddalways = 30;
+        kptmax = 250;
+        kptaddalways = 10;
         
         if(length(newP)<=kptaddalways)
             %just add all keypoints avaliable
