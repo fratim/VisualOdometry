@@ -47,7 +47,7 @@ end
 % need to set bootstrap_frames
 if ds == 0
     imgs = [];
-    bootstrap_frames = [0,3];
+    bootstrap_frames = [568,571];
     for i=bootstrap_frames(1):bootstrap_frames(2)       
         img = imread([kitti_path '/00/image_0/' ...
             sprintf('%06d.png',i)]);
@@ -93,7 +93,7 @@ if (debug == true)
 end
 
 %% Continuous operation
-img1 = cell2mat(imgs(bootstrap_frames(2)+1));
+img1 = cell2mat(imgs(end));
 close all
 range = (bootstrap_frames(2)+1):last_frame;
 % possible only take every xth frame (right now every second)

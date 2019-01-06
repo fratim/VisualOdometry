@@ -28,11 +28,15 @@ function S = contFt_KLT(S,img)
     end
     
     % add new keypoints
-    kpt_new_needed = 50;
+    Harris_new_needed = 50;
     
     if(length(S.t1.P)<250)
-        kpt_new_needed = 150;
+        Harris_new_needed = 150;
     end
+    
+    %if(length(S.t1.CC)<250)
+    %    Harris_new_needed = 150;
+    %end
     
     %extract features that belong to new keypoints (watch out for scale of image!!)
     %need feature extraction to determine uality of points
@@ -42,7 +46,7 @@ function S = contFt_KLT(S,img)
     
     [Harris_new,kpt_new_quality] = deletecloseHarris(Harris_new,kpt_new_quality);
     
-    [Harris_new,kpt_new_quality] = enforceBlocksKptNew(Harris_new,kpt_new_quality,kpt_new_needed, xmax, ymax);
+    [Harris_new,kpt_new_quality] = enforceBlocksKptNew(Harris_new,kpt_new_quality,Harris_new_needed, xmax, ymax);
     
     if(~isempty(S.t1.CC))
         
@@ -68,7 +72,20 @@ function S = contFt_KLT(S,img)
         newQuality = [];
         % start i at 3, so at least 2 pictures difference
         %Check the angle criterium
-        for i=1:size(U,1)
+        
+        if(length(S.t1.P)<20)
+            if(size(U,1)>2)
+                a=2;
+            else
+                a=1;
+            end
+            critical=1;
+        else 
+            a=1;
+            critical = 0;
+        end
+        
+        for i=a:size(U,1)
             %Cluster different feature starting points 
             u_temp = ismember(S.t1.T,U(i,:),'rows');
             u_temp = find(u_temp==1);
@@ -98,7 +115,7 @@ function S = contFt_KLT(S,img)
                 alpha = acos((a*a -b*b -c*c)/(-2*b*c));
 
                 %Add features that fulfill criterium
-                if(abs(alpha)>MinAngle)
+                if(abs(alpha)>MinAngle || critical==1)
                     newP = [newP;p2(j,:)]; % flip to get u v
                     newX = [newX;X(j,:)];
                     newQuality = [newQuality; double(kp_quality(j))];
@@ -149,7 +166,11 @@ function S = contFt_KLT(S,img)
         S.t1.F = S.t1.F(nonexist_set,:);
         S.t1.T = S.t1.T(nonexist_set,:);
 
+        len_old = length(S.t1.CC);
+            
         S = deletecloseCC(S);
+        
+        disp(['points CC deleted supression: ', num2str(len_old-length(S.t1.CC))]);
         
         disp(['Candidate points: ', num2str(length(S.t1.C))]);
         
