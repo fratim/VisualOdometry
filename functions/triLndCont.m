@@ -35,7 +35,7 @@ function [p0,p1,X,running] = triLndCont(S,R,T,p0,p1)
     p0 = p0(idx_keep,:);
     p1 = p1(idx_keep,:);
     %Reject points that are too far away
-    idx_keep = find(X(:,3)<200);
+    idx_keep = find(X(:,3)<40);
     X = X(idx_keep,:);
     p0 = p0(idx_keep,:);
     p1 = p1(idx_keep,:);

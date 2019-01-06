@@ -8,20 +8,20 @@ function [p0,p1,X] = triLnd(S,R,T,p0,p1,firstPose)
     
     %Strange Camera matrix shit for matlab (see documentation of
     %cameraMatrix)
-    try
-        [F,inliersIndex,status] = estimateFundamentalMatrix(p0,...
-        p1,'Method','RANSAC',...
-        'NumTrials',NumTrials,'DistanceThreshold',DistanceThreshold,...
-        'InlierPercentage',InlierPercentage);
-    catch
-        p0 = [];
-        p1 = [];
-        X  = [];
-        return
-    end
-    inliers = find(inliersIndex==1);
-    p0 = p0(inliers,:);
-    p1 = p1(inliers,:);
+%     try
+%         [F,inliersIndex,status] = estimateFundamentalMatrix(p0,...
+%         p1,'Method','RANSAC',...
+%         'NumTrials',NumTrials,'DistanceThreshold',DistanceThreshold,...
+%         'InlierPercentage',InlierPercentage);
+%     catch
+%         p0 = [];
+%         p1 = [];
+%         X  = [];
+%         return
+%     end
+%     inliers = find(inliersIndex==1);
+%     p0 = p0(inliers,:);
+%     p1 = p1(inliers,:);
     
     R_n = S.t1.Pose(1:3,1:3);
     T_n = S.t1.Pose(1:3,4)';
@@ -48,20 +48,20 @@ function [p0,p1,X] = triLnd(S,R,T,p0,p1,firstPose)
     
     %delete points behind camera or that are too far away
     %find transform to current camera pose coordinate system
-    T = [S.t1.Pose;zeros(1,3),1];
-    worldP_cameraframe = inv(T)*[worldP';ones(1,size(worldP,1))];
-    worldP_cameraframe = worldP_cameraframe(1:3,:)';
-    
-    %z bigger than 0
-    keep(find(worldP_cameraframe(:,3)<0))=0;
-    
-    % distance in z smaller than 40
-    keep(find(worldP_cameraframe(:,3)>20))=0;
-    
-    %only keep points that meet criteria
-    worldP = worldP(keep,:);
-    p0=p0(keep,:);
-    p1=p1(keep,:);
+%     T = [S.t1.Pose;zeros(1,3),1];
+%     worldP_cameraframe = inv(T)*[worldP';ones(1,size(worldP,1))];
+%     worldP_cameraframe = worldP_cameraframe(1:3,:)';
+%     
+%     %z bigger than 0
+%     keep(find(worldP_cameraframe(:,3)<0))=0;
+%     
+%     % distance in z smaller than 40
+%     keep(find(worldP_cameraframe(:,3)>70))=0;
+%     
+%     %only keep points that meet criteria
+     worldP = worldP(keep,:);
+     p0=p0(keep,:);
+     p1=p1(keep,:);
     
     X=worldP;
    
