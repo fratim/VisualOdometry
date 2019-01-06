@@ -91,29 +91,29 @@ function S = contFt_KLT(S,img)
             
             blockSize = 50;
             
-            if(length(p1)>blockSize)
-                p1_triang = [];
-                p2_triang = [];
-                X = [];
-                npoints = length(p1);
-                nblocks = floor(npoints/blockSize);
-                for k = 1:nblocks
-                    if(blockSize*k>length(p1))
-                        p1_temp = p1(blockSize*k-blockSize+1:end,:);
-                        p2_temp = p1(blockSize*k-blockSize+1:end,:);
-                    else   
-                        p1_temp = p1(blockSize*k-blockSize+1:blockSize*k,:);
-                        p2_temp = p1(blockSize*k-blockSize+1:blockSize*k,:);
-                    end
-                    
-                    [p1_temp,p2_temp,X_temp] = triLnd(S,R,T,p1_temp,p2_temp,P1);
-                    p1_triang = [p1_triang;p1_temp];
-                    p2_triang = [p2_triang;p2_temp];
-                    X = [X;X_temp];
-                end
-            else
+%             if(length(p1)>blockSize)
+%                 p1_triang = [];
+%                 p2_triang = [];
+%                 X = [];
+%                 npoints = length(p1);
+%                 nblocks = floor(npoints/blockSize);
+%                 for k = 1:nblocks
+%                     if(blockSize*k>length(p1))
+%                         p1_temp = p1(blockSize*k-blockSize+1:end,:);
+%                         p2_temp = p1(blockSize*k-blockSize+1:end,:);
+%                     else   
+%                         p1_temp = p1(blockSize*k-blockSize+1:blockSize*k,:);
+%                         p2_temp = p1(blockSize*k-blockSize+1:blockSize*k,:);
+%                     end
+%                     
+%                     [p1_temp,p2_temp,X_temp] = triLnd(S,R,T,p1_temp,p2_temp,P1);
+%                     p1_triang = [p1_triang;p1_temp];
+%                     p2_triang = [p2_triang;p2_temp];
+%                     X = [X;X_temp];
+%                 end
+%             else
             [p1_triang,p2_triang,X] = triLnd(S,R,T,p1,p2,P1);
-            end
+%             end
             
             if(isempty(X))
                 continue
@@ -137,9 +137,7 @@ function S = contFt_KLT(S,img)
             %             
         end
         
-        
         % add only 50 strongest keypoints in ech interation
-
         kptmax = 300;
         kptaddalways = 00;
         

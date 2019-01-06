@@ -53,10 +53,10 @@ function [p0,p1,X] = triLnd(S,R,T,p0,p1,firstPose)
     worldP_cameraframe = worldP_cameraframe(1:3,:)';
     
     %z bigger than 0
-    keep(find(worldP_cameraframe(:,3)<0))=0;
+    %keep(find(worldP_cameraframe(:,3)<0))=0;
     
     % distance in z smaller than 40
-    keep(find(worldP_cameraframe(:,3)>20))=0;
+    %keep(find(worldP_cameraframe(:,3)>20))=0;
     
     %only keep points that meet criteria
     worldP = worldP(keep,:);

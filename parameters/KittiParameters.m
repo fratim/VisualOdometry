@@ -11,7 +11,7 @@ global detectNewLnd;
 detectNewLnd = true;
 %global rescale, before any operation
 global cont_rescale
-cont_rescale = 0.5 ;%10.75;
+cont_rescale = 0.25 ;%10.75;
 % Harris Kernel Size
 global HrKernel
 HrKernel = 9;
