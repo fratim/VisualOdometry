@@ -65,7 +65,7 @@ elseif ds == 1
  
 
 elseif ds == 2
-    bootstrap_frames = [0,2];
+    bootstrap_frames = [0,3];
     img0 = rgb2gray(imread([parking_path ...
         sprintf('/images/img_%05d.png',bootstrap_frames(1))]));
     img1 = rgb2gray(imread([parking_path ...

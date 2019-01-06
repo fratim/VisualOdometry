@@ -2,7 +2,7 @@
 
 % MAx reprojection error used for camera pose estimateion function
 global MaxReprojErrorCameraPose
-MaxReprojErrorCameraPose = 0.5;
+MaxReprojErrorCameraPose = 1;
 global key_freq
 key_freq = 3;
 %choose if new landmarks shall be detected (otherwise only running with
@@ -14,16 +14,16 @@ global cont_rescale
 cont_rescale = 1 ;%10.75;
 % Harris Kernel Size
 global HrKernel
-HrKernel = 11;
+HrKernel = 5;
 % HArris Rescale
 global HrScale
-HrScale = 1;
+HrScale = 0.75;
 % Harris Minimum Quality
 global HrQuality
 HrQuality = 0.0001;
 % Minimum angle for new landmarks
 global MinAngle
-MinAngle = 1.5/180 * pi;
+MinAngle = 0.2/180 * pi;
 % Feature Block Patch Size
 global BlockSize
 BlockSize = 17;
@@ -38,10 +38,10 @@ global MatchThresholdInit
 MatchThresholdInit = 70;
 %MAximum permitted reprojection Error (in Pixels??)
 global MaxReprojError
-MaxReprojError = 10;
+MaxReprojError = 5;
 %Minimum Points needed to continue execution, break otherwise
 global MinPoints
-MinPoints = 15;
+MinPoints = 10;
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %Parameters for KLT
 %patch radius
@@ -54,7 +54,7 @@ num_iters = 1000;
 global lambda
 lambda = 1;
 global numPyramids
-numPyramids = 5;
+numPyramids = 10;
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %RANSAC Parameters
 global NumTrials
@@ -69,12 +69,12 @@ Confidence = 99;
 global kptadd
 kptadd = 200;
 global PGoal
-PGoal = 50;
+PGoal = 100;
 global n_crit
 n_crit = 20;
 global kptmax
-kptmax = 200;
+kptmax = 150;
 global kptaddalways
-kptaddalways = 0 ;
+kptaddalways = 10 ;
 global min_boot
 min_boot = 16;

@@ -7,6 +7,7 @@ function [] = plot_frame(S,traj,land_hist,frame)
     position_z = S.t1.Pose(1,4);
     %axis([position_x-40 position_x+40 position_z-40 position_z+40]) %this does not seem to have any effect
     plot(-19:1:0,land_hist)
+    axis([-19 1 0 500]);
     title('# Tracked landmarks of last 20 frames')
     
     pos2 = [0.3 0.05 0.2 0.4];
