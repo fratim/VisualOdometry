@@ -47,7 +47,7 @@ end
 % need to set bootstrap_frames
 if ds == 0
     imgs = [];
-    bootstrap_frames = [568,571];
+    bootstrap_frames = [0,3];
     for i=bootstrap_frames(1):bootstrap_frames(2)       
         img = imread([kitti_path '/00/image_0/' ...
             sprintf('%06d.png',i)]);
@@ -76,7 +76,7 @@ else
 end
 
 %Bootstrapping 
-[S, success] = bootstrap(imgs,K);
+[S, success] = bootstrap(imgs,K,1,[]);
 
 if(~success)
     disp('Initialization not successfull!')
@@ -127,12 +127,14 @@ keycounter = 0;
 
 land_hist=zeros(20,1);
 traj=[];
+new_boot = 1;
 %iterate through all frames from video
 for i = range
     
     fprintf('\n\nProcessing frame %d\n=====================\n', i);
     if ds == 0
-        image = imread([kitti_path '/00/image_0/' sprintf('%06d.png',i)]);
+        image = imread([kitti_path '/00/image_0/' ...
+            sprintf('%06d.png',i)]);
     elseif ds == 1
         image = rgb2gray(imread([malaga_path ...
             '/malaga-urban-dataset-extract-07_rectified_800x600_Images/' ...
@@ -165,13 +167,37 @@ for i = range
     traj = [traj; S.t1.Pose(1:3,4)'];
     land_hist(1:19)=land_hist(2:20);
     land_hist(20)= size(S.t1.X,1);
+    
+    if(size(S.t1.X,1)<30 && new_boot==0)
+        imgs=[];
+        for j=i-1:i+2 
+            if(ds==0)
+                img = imread([kitti_path '/00/image_0/' ...
+                sprintf('%06d.png',j)]);
+            elseif(ds==1)
+                img = rgb2gray(imread([malaga_path ...
+                '/malaga-urban-dataset-extract-07_rectified_800x600_Images/' ...
+                left_images(j).name]));
+            elseif(ds==2)
+                img = im2uint8(rgb2gray(imread([parking_path ...
+                sprintf('/images/img_%05d.png',j)])));
+            end
+            imgs = [imgs;{img}];
+        end
+        [S, success] = bootstrap(imgs,K,0,S);
+        new_boot=1;
+    else
+        new_boot=0;
+    end
+    
+    
     % debug
     if (debug==true)% && plot_index > (plot_freq+1))
         %debugplot(S, prev_image,image)
         %p_o = [S.ti.X(:,3) S.ti.Y(:,3)];
         %p_n = [S.ti.X(:,4) S.ti.Y(:,4)];
         %showMatchedFeatures(prev_image,image,p_o,p_n)
-        pause(0.05);      
+        pause(0.75);      
         plot_frame(S,traj,land_hist,image);
         plot_index = 0;
     end

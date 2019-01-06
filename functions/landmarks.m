@@ -30,6 +30,9 @@ function [p0,p1,X,running] = landmarks(S,p0,p1,Pose_0)
     [R,T_transp] = relativeCameraPose(F,S.K,S.K,p0,p1);
     T = T_transp;
     
+    T_temp = [R,T';0 0 0 1] * [S.t0.Pose;0 0 0 1];
+    S.t1.Pose = T_temp(1:3,1:4);
+    
     %Triangulate landmarks
     [p0,p1,X,running] = triLndCont(S,R,T,p0,p1);
 

@@ -20,7 +20,9 @@ function [] = plot_frame(S,traj,land_hist,frame)
     imshow(frame)
     hold on
     plot(S.t1.P(:,1),S.t1.P(:,2),'gx')
-    plot(S.t1.CC(:,1),S.t1.CC(:,2),'rx')
+    if(length(S.t1.CC)>0)
+        plot(S.t1.CC(:,1),S.t1.CC(:,2),'rx')
+    end
     hold off
     title('Current Frame')
     

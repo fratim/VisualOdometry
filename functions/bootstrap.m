@@ -1,4 +1,4 @@
-function [S, success] =  bootstrap(imgs, K)%% Initialization of Pose and Landmarks
+function [S, success] =  bootstrap(imgs, K, boot,S)%% Initialization of Pose and Landmarks
 
 % establish S data struct (cell)
 % Markovian idea: cell of information (denoted by S) is passed and updated continously,
@@ -23,24 +23,40 @@ function [S, success] =  bootstrap(imgs, K)%% Initialization of Pose and Landmar
 
 %S = cell(2,6);
 %S = struct('P_t1',{},'X_t1',{},'C_t1',{})
-S.t1.P = [];
-S.t1.X = [];
-S.t1.C = []; %first appreance
-S.t1.CC = []; %current position
-S.t1.F = [];
-S.t1.T = [];
-S.t1.Pose = [];
+if(boot)
+    S.t1.P = [];
+    S.t1.X = [];
+    S.t1.C = []; %first appreance
+    S.t1.CC = []; %current position
+    S.t1.F = [];
+    S.t1.T = [];
+    S.t1.Pose = [];
 
-S.t0.P = [];
-S.t0.X = [];
-S.t0.C = [];
-S.t0.CC = [];
-S.t0.F = [];
-S.t0.T = [];
-S.t0.Pose = eye(3,4);
+    S.t0.P = [];
+    S.t0.X = [];
+    S.t0.C = [];
+    S.t0.CC = [];
+    S.t0.F = [];
+    S.t0.T = [];
+    S.t0.Pose = eye(3,4);
 
-S.K = cameraParameters('IntrinsicMatrix',K');
+    S.K = cameraParameters('IntrinsicMatrix',K');
+    
+else
+    S.t1.P = [];
+    S.t1.X = [];
+    S.t1.C = []; %first appreance
+    S.t1.CC = []; %current position
+    S.t1.F = [];
+    S.t1.T = [];
 
+    S.t0.P = [];
+    S.t0.X = [];
+    S.t0.C = [];
+    S.t0.CC = [];
+    S.t0.F = [];
+    S.t0.T = [];
+end
 % 3.2 Establish keypoint correspondences
 success = true;
 
