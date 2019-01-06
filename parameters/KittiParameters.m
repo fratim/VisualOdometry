@@ -17,7 +17,7 @@ global HrKernel
 HrKernel = 9;
 % HArris Rescale
 global HrScale
-HrScale = 0.75;
+HrScale = 1;
 % Harris Minimum Quality
 global HrQuality
 HrQuality = 0.0001;

@@ -41,7 +41,11 @@ function S = contFt_KLT(S,img)
     kpt_new = double(kpt_new_temp.Location);
     kpt_new_quality = kpt_new_temp.Metric;
     
-    kpt_new_needed = 100;
+    kpt_new_needed = 5;
+    
+    if(length(S.t1.P)<150)
+        kpt_new_needed = 150;
+    end
     
     [kpt_new,kpt_new_quality] = enforceBlocksKptNew(kpt_new,kpt_new_quality,kpt_new_needed, xmax, ymax);
     
@@ -72,7 +76,7 @@ function S = contFt_KLT(S,img)
         for i=1:size(U,1)
             %Cluster different feature starting points 
             u_temp = ismember(S.t1.T,U(i,:),'rows');
-            u_temp = find(u_temp==1); 
+            u_temp = find(u_temp==1);
             
             %load keypoints and other stuff
             p1 = kpt_matched_old_xy(u_temp,:);
@@ -83,9 +87,9 @@ function S = contFt_KLT(S,img)
 
             R = P1(1:3,1:3)'*P2(1:3,1:3);
             T = (P2(1:3,4)-P1(1:3,4))';
-            %Triangulate matched candidates
             [p1,p2,X] = triLnd(S,R,T,p1,p2,P1);
 
+            
             if(isempty(X))
                 continue
             end
@@ -105,9 +109,8 @@ function S = contFt_KLT(S,img)
                     newQuality = [newQuality; double(kp_quality(j))];
                 end
             end
-            %             
+                        
         end
-        
         
         % add only 50 strongest keypoints in ech interation
         kptmax = 300;
