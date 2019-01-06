@@ -4,7 +4,7 @@ clc
 addpath(genpath('.'));
 
 %% Setup
-ds = 0; % 0: KITTI, 1: Malaga, 2: parking
+ds = 2; % 0: KITTI, 1: Malaga, 2: parking
 debug = true;
 kitti_path = 'kitti';
 malaga_path = 'malaga-urban-dataset-extract-07';
@@ -65,7 +65,7 @@ elseif ds == 1
  
 
 elseif ds == 2
-    bootstrap_frames = [0,3];
+    bootstrap_frames = [0,2];
     img0 = rgb2gray(imread([parking_path ...
         sprintf('/images/img_%05d.png',bootstrap_frames(1))]));
     img1 = rgb2gray(imread([parking_path ...
@@ -93,6 +93,7 @@ end
 
 %% Continuous operation
 close all
+global min_boot
 range = (bootstrap_frames(2)+1):last_frame;
 % possible only take every xth frame (right now every second)
 %range = range(1):2:range(end);
@@ -166,7 +167,8 @@ for i = range
     land_hist(1:19)=land_hist(2:20);
     land_hist(20)= size(S.t1.X,1);
     
-    if(size(S.t1.X,1)<30 && new_boot==0)
+    if(size(S.t1.X,1)<min_boot && new_boot==0)
+        S.t0=S.t1;
         success = 0;
         if(ds==0)
             img0 = imread([kitti_path '/00/image_0/' ...
@@ -194,7 +196,7 @@ for i = range
                 sprintf('/images/img_%05d.png',i)])));       
             end
             
-            [S, success] = bootstrap(imgs,K,0,S);
+            [S, success] = bootstrap(img0,img1,K,0,S);
             running = success;
         end
         new_boot=1;
@@ -209,7 +211,7 @@ for i = range
         %p_o = [S.ti.X(:,3) S.ti.Y(:,3)];
         %p_n = [S.ti.X(:,4) S.ti.Y(:,4)];
         %showMatchedFeatures(prev_image,image,p_o,p_n)
-        pause(0.75);      
+        pause(0.05);      
         plot_frame(S,traj,land_hist,image);
         plot_index = 0;
     end

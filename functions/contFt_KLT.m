@@ -6,6 +6,12 @@ function S = contFt_KLT(S,img)
     global MinAngle
     global BlockSize
     global Suppression
+    global PGoal
+    global kptadd
+    global PGoal
+    global n_crit
+    global kptmax
+    global kptaddalways
     %needed for grid adding of keypoints
     [ymax,xmax] = size(img);
     
@@ -30,7 +36,7 @@ function S = contFt_KLT(S,img)
     % add new keypoints
     Harris_new_needed = 50;
     
-    if(length(S.t1.P)<250)
+    if(length(S.t1.P)<PGoal)
         Harris_new_needed = 150;
     end
     
@@ -73,18 +79,18 @@ function S = contFt_KLT(S,img)
         % start i at 3, so at least 2 pictures difference
         %Check the angle criterium
         
-        if(length(S.t1.P)<20)
-            if(size(U,1)>2)
-                a=2;
-            else
-                a=1;
+         if(length(S.t1.P)<n_crit)
+             if(size(U,1)>2)
+                 a=2;
+             else
+                 a=1;
             end
             critical=1;
         else 
             a=1;
-            critical = 0;
+             critical = 0;
         end
-        
+      
         for i=a:size(U,1)
             %Cluster different feature starting points 
             u_temp = ismember(S.t1.T,U(i,:),'rows');
@@ -124,10 +130,7 @@ function S = contFt_KLT(S,img)
                         
         end
         
-        % add only 50 strongest keypoints in ech interation
-        kptmax = 300;
-        kptaddalways = 10;
-        
+        % add only 50 strongest keypoints in ech interation        
         if(length(newP)<=kptaddalways)
             %just add all keypoints avaliable
             %newP = newP;

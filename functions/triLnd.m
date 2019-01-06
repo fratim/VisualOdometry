@@ -11,17 +11,21 @@ function [p0,p1,X] = triLnd(S,R,T,p0,p1,firstPose)
 %     try
 %         [F,inliersIndex,status] = estimateFundamentalMatrix(p0,...
 %         p1,'Method','RANSAC',...
-%         'NumTrials',NumTrials,'DistanceThreshold',DistanceThreshold,...
-%         'InlierPercentage',InlierPercentage);
+%         'NumTrials',2000,'DistanceThreshold',0.01,...
+%         'InlierPercentage',50,'Confidence',70);
 %     catch
 %         p0 = [];
 %         p1 = [];
 %         X  = [];
 %         return
 %     end
-%     inliers = find(inliersIndex==1);
-%     p0 = p0(inliers,:);
-%     p1 = p1(inliers,:);
+%     
+%     inliers_per = length(find(inliersIndex>0))/length(inliersIndex);
+%     disp(['inliers in ransac: ', num2str(inliers_per)]);
+%     
+%      inliers = find(inliersIndex==1);
+%      p0 = p0(inliers,:);
+%      p1 = p1(inliers,:);
     
     R_n = S.t1.Pose(1:3,1:3);
     T_n = S.t1.Pose(1:3,4)';

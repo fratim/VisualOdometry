@@ -2,7 +2,7 @@
 
 % MAx reprojection error used for camera pose estimateion function
 global MaxReprojErrorCameraPose
-MaxReprojErrorCameraPose = 3;
+MaxReprojErrorCameraPose = 0.5;
 global key_freq
 key_freq = 3;
 %choose if new landmarks shall be detected (otherwise only running with
@@ -23,13 +23,13 @@ global HrQuality
 HrQuality = 0.0001;
 % Minimum angle for new landmarks
 global MinAngle
-MinAngle = 0.5/180 * pi;
+MinAngle = 1.5/180 * pi;
 % Feature Block Patch Size
 global BlockSize
 BlockSize = 17;
 % Maxima suppression (discard if image points are too close)
 global Suppression
-Suppression = 5;
+Suppression = 15;
 % Featue Matching Threshold for triangulation of new landmarks
 global MatchThresholdCont
 MatchThresholdCont = 70;
@@ -38,7 +38,7 @@ global MatchThresholdInit
 MatchThresholdInit = 70;
 %MAximum permitted reprojection Error (in Pixels??)
 global MaxReprojError
-MaxReprojError = 3;
+MaxReprojError = 10;
 %Minimum Points needed to continue execution, break otherwise
 global MinPoints
 MinPoints = 15;
@@ -68,3 +68,13 @@ Confidence = 99;
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 global kptadd
 kptadd = 200;
+global PGoal
+PGoal = 50;
+global n_crit
+n_crit = 20;
+global kptmax
+kptmax = 200;
+global kptaddalways
+kptaddalways = 0 ;
+global min_boot
+min_boot = 16;

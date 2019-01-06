@@ -23,7 +23,7 @@ global HrQuality
 HrQuality = 0.001;
 % Minimum angle for new landmarks
 global MinAngle
-MinAngle = 1.5/180 * pi;
+MinAngle = 0.1/180 * pi;
 % Feature Block Patch Size
 global BlockSize
 BlockSize = 17;
@@ -38,7 +38,7 @@ global MatchThresholdInit
 MatchThresholdInit = 90;
 %MAximum permitted reprojection Error (in Pixels??)
 global MaxReprojError
-MaxReprojError = 10;
+MaxReprojError = 5;
 %Minimum Points needed to continue execution, break otherwise
 global MinPoints
 MinPoints = 15;
@@ -54,7 +54,7 @@ num_iters = 1000;
 global lambda
 lambda = 1;
 global numPyramids
-numPyramids = 20;
+numPyramids = 5;
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %RANSAC Parameters
 global NumTrials
@@ -65,15 +65,6 @@ global InlierPercentage
 InlierPercentage = 80;
 global Confidence
 Confidence = 99;
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 global kptadd
-kptadd = 200;
-global PGoal
-PGoal = 50;
-global n_crit
-n_crit = 20;
-global kptmax
-kptmax = 200;
-global kptaddalways
-kptaddalways = 0 ;
-global min_boot
-min_boot = 16;
+kptadd = 100;
