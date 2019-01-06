@@ -171,7 +171,7 @@ for i = range
         %p_o = [S.ti.X(:,3) S.ti.Y(:,3)];
         %p_n = [S.ti.X(:,4) S.ti.Y(:,4)];
         %showMatchedFeatures(prev_image,image,p_o,p_n)
-        pause(0.75);      
+        pause(0.05);      
         plot_frame(S,traj,land_hist,image);
         plot_index = 0;
     end

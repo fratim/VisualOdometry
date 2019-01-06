@@ -9,45 +9,39 @@ function S = contFt_KLT(S,img)
     %needed for grid adding of keypoints
     [ymax,xmax] = size(img);
     
-    points_new = detectHarrisFeatures(img,'MinQuality',HrQuality,'FilterSize',HrKernel);
-    kpt_new = double(points_new.Location);
+    Harris_new = detectHarrisFeatures(img,'MinQuality',HrQuality,'FilterSize',HrKernel);
 
     % implement new keypoints and load old ones
-    kpt_new_temp = round(kpt_new./Suppression);
-    kpt_old_temp = round(S.t1.P./Suppression);
+    %kpt_new_temp = round(kpt_new./Suppression);
+    %kpt_old_temp = round(S.t1.P./Suppression);
 
-    % find duplicates of new corners
-    exist_set = ismember(kpt_new_temp,kpt_old_temp,'rows');
+    %find duplicates of new corners (already a landmark)
+    exist_set = ismembertol(Harris_new.Location,S.t1.P,Suppression,'ByRows',true,'DataScale',1);
     nonexist_set = find(exist_set==0);
-
-    % discard new features that are already a landmark (already exist)
-    kpt_new = points_new(nonexist_set,:);
+    Harris_new = Harris_new(nonexist_set,:);
     
-    if(length(S.t1.CC>0))
-        kpt_cand_temp = round(S.t1.CC./Suppression);
-        % find duplicates of candidates
-        exist_set = ismember(kpt_cand_temp,kpt_old_temp,'rows');
+    if(~isempty(S.t1.CC))
+        %dicard features that are already a Candidate
+        exist_set = ismembertol(Harris_new.Location,S.t1.CC,Suppression,'ByRows',true,'DataScale',1);
         nonexist_set = find(exist_set==0);
-
-        % discard candidates that are already a landmark (already exist)
-        S.t1.CC = S.t1.CC(nonexist_set,:);
-        S.t1.C = S.t1.C(nonexist_set,:);
-        S.t1.F = S.t1.F(nonexist_set,:);
-        S.t1.T = S.t1.T(nonexist_set,:);
+        Harris_new = Harris_new(nonexist_set,:);
     end
-    %extract features that belong to new keypoints (watch out for scale of image!!)
-    %need feature extraction to determine uality of points
-    [features_new,kpt_new_temp] = extractFeatures(img,kpt_new,'Method','Block','Blocksize',BlockSize);
-    kpt_new = double(kpt_new_temp.Location);
-    kpt_new_quality = kpt_new_temp.Metric;
     
-    kpt_new_needed = 5;
-    
+    % add new keypoints
+    kpt_new_needed = 20;
     if(length(S.t1.P)<150)
         kpt_new_needed = 150;
     end
     
-    [kpt_new,kpt_new_quality] = enforceBlocksKptNew(kpt_new,kpt_new_quality,kpt_new_needed, xmax, ymax);
+    %extract features that belong to new keypoints (watch out for scale of image!!)
+    %need feature extraction to determine uality of points
+    [features_new,kpt_new_temp] = extractFeatures(img,Harris_new,'Method','Block','Blocksize',BlockSize);
+    Harris_new = double(kpt_new_temp.Location);
+    kpt_new_quality = kpt_new_temp.Metric;
+    
+    [Harris_new,kpt_new_quality] = deletecloseHarris(Harris_new,kpt_new_quality);
+    
+    [Harris_new,kpt_new_quality] = enforceBlocksKptNew(Harris_new,kpt_new_quality,kpt_new_needed, xmax, ymax);
     
     if(~isempty(S.t1.CC))
         
@@ -114,12 +108,12 @@ function S = contFt_KLT(S,img)
         
         % add only 50 strongest keypoints in ech interation
         kptmax = 300;
-        kptaddalways = 00;
+        kptaddalways = 10;
         
         if(length(newP)<=kptaddalways)
             %just add all keypoints avaliable
-            newP = newP;
-            newX = newX;
+            %newP = newP;
+            %newX = newX;
         elseif (length(S.t1.P)<kptmax)
             % if less than max, only fill up + addalways
             kpt_needed = kptmax - length(S.t1.P) + kptaddalways;
@@ -139,20 +133,33 @@ function S = contFt_KLT(S,img)
  
         % Add new Features that were not matched with old ones
         S.t1.F = [S.t1.F;kpt_new_quality];
-        S.t1.C = [S.t1.C;kpt_new];
-        S.t1.CC = [S.t1.CC;kpt_new];
-        T_add = repmat(reshape(S.t1.Pose,[1,12]),size(kpt_new,1),1);
+        S.t1.C = [S.t1.C;Harris_new];
+        S.t1.CC = [S.t1.CC;Harris_new];
+        T_add = repmat(reshape(S.t1.Pose,[1,12]),size(Harris_new,1),1);
         S.t1.T = [S.t1.T;T_add];
         
+        
+        % find duplicates of candidates
+        exist_set = ismembertol(S.t1.CC,S.t1.P,Suppression,'ByRows',true,'DataScale',1);
+        nonexist_set = find(exist_set==0);
+
+        S.t1.CC = S.t1.CC(nonexist_set,:);
+        S.t1.C = S.t1.C(nonexist_set,:);
+        S.t1.F = S.t1.F(nonexist_set,:);
+        S.t1.T = S.t1.T(nonexist_set,:);
+
+        S = deletecloseCC(S);
+        
         disp(['Candidate points: ', num2str(length(S.t1.C))]);
+        
         
         
     %Initial features
     else
         S.t1.F = [S.t1.F;double(kpt_new_quality)];
-        S.t1.C = [S.t1.C;kpt_new];
-        S.t1.CC = [S.t1.CC;kpt_new];
-        T_add = repmat(reshape(S.t1.Pose,[1,12]),size(kpt_new,1),1);
+        S.t1.C = [S.t1.C;Harris_new];
+        S.t1.CC = [S.t1.CC;Harris_new];
+        T_add = repmat(reshape(S.t1.Pose,[1,12]),size(Harris_new,1),1);
         S.t1.T = [S.t1.T;T_add];
     end
    

@@ -19,7 +19,7 @@ function [] = plot_frame(S,traj,land_hist,frame)
     subplot('Position',pos3)
     imshow(frame)
     hold on
-    scatter(S.t1.P(:,1),S.t1.P(:,2))
+    plot(S.t1.P(:,1),S.t1.P(:,2),'gx')
     plot(S.t1.CC(:,1),S.t1.CC(:,2),'rx')
     hold off
     title('Current Frame')

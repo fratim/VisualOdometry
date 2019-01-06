@@ -61,7 +61,7 @@ function [p0,p1,X] = triLnd(S,R,T,p0,p1,firstPose)
 %     %only keep points that meet criteria
      worldP = worldP(keep,:);
      p0=p0(keep,:);
-     p1=p1(keep,:)
+     p1=p1(keep,:);
     
     X=worldP;
    
