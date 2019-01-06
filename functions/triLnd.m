@@ -8,6 +8,21 @@ function [p0,p1,X] = triLnd(S,R,T,p0,p1,firstPose)
     
     %Strange Camera matrix shit for matlab (see documentation of
     %cameraMatrix)
+    try
+        [F,inliersIndex,status] = estimateFundamentalMatrix(p0,...
+        p1,'Method','RANSAC',...
+        'NumTrials',NumTrials,'DistanceThreshold',DistanceThreshold,...
+        'InlierPercentage',InlierPercentage);
+    catch
+        p0 = [];
+        p1 = [];
+        X  = [];
+        return
+    end
+    inliers = find(inliersIndex==1);
+    p0 = p0(inliers,:);
+    p1 = p1(inliers,:);
+    
     R_n = S.t1.Pose(1:3,1:3);
     T_n = S.t1.Pose(1:3,4)';
     
@@ -41,7 +56,7 @@ function [p0,p1,X] = triLnd(S,R,T,p0,p1,firstPose)
     keep(find(worldP_cameraframe(:,3)<0))=0;
     
     % distance in z smaller than 40
-    keep(find(worldP_cameraframe(:,3)>40))=0;
+    keep(find(worldP_cameraframe(:,3)>20))=0;
     
     %only keep points that meet criteria
     worldP = worldP(keep,:);

@@ -20,16 +20,16 @@ global HrScale
 HrScale = 1;
 % Harris Minimum Quality
 global HrQuality
-HrQuality = 0.001;
+HrQuality = 0.0001;
 % Minimum angle for new landmarks
 global MinAngle
-MinAngle = 0.1/180 * pi;
+MinAngle = 1/180 * pi;
 % Feature Block Patch Size
 global BlockSize
 BlockSize = 17;
 % Maxima suppression (discard if image points are too close)
 global Suppression
-Suppression = 25;
+Suppression = 10;
 % Featue Matching Threshold for triangulation of new landmarks
 global MatchThresholdCont
 MatchThresholdCont = 90;
@@ -54,7 +54,7 @@ num_iters = 1000;
 global lambda
 lambda = 1;
 global numPyramids
-numPyramids = 10;
+numPyramids = 20;
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %RANSAC Parameters
 global NumTrials
