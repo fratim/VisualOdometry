@@ -1,4 +1,4 @@
-function [S, success] =  bootstrap(imgs, K, boot,S)%% Initialization of Pose and Landmarks
+function [S, success] =  bootstrap(img0,img1, K, boot,S)%% Initialization of Pose and Landmarks
 
 % establish S data struct (cell)
 % Markovian idea: cell of information (denoted by S) is passed and updated continously,
@@ -61,20 +61,7 @@ end
 success = true;
 
 % keypoint correspondences can be established either with HARRIS or SIFT
-
-% for i=1:size(imgs,1)-1
-%     S.t0.P=S.t1.P;
-%     img0 = cell2mat(imgs(i));
-%     img1 = cell2mat(imgs(i+1));
-%     if(i==1)
-%         [S, running] = kptHar(S, img0, img1,1);
-%     else
-%         [S, running] = kptHar(S, img0, img1,0);
-%     end
 % end
-
-img0 = cell2mat(imgs(1));
-img1 = cell2mat(imgs(4));
 
 %Get matches from frame 1 to 4
 [S, running] = kptHar(S, img0, img1,1);

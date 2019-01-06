@@ -47,36 +47,35 @@ end
 % need to set bootstrap_frames
 if ds == 0
     imgs = [];
-    bootstrap_frames = [0,3];
-    for i=bootstrap_frames(1):bootstrap_frames(2)       
-        img = imread([kitti_path '/00/image_0/' ...
-            sprintf('%06d.png',i)]);
-        imgs = [imgs;{img}];
-    end
+    bootstrap_frames = [0,3];      
+        img0 = imread([kitti_path '/00/image_0/' ...
+            sprintf('%06d.png',bootstrap_frames(1))]);
+        img1 = imread([kitti_path '/00/image_0/' ...
+            sprintf('%06d.png',bootstrap_frames(2))]);
+
 elseif ds == 1
-    imgs = [];
-    bootstrap_frames = [0,3];
-    for i=bootstrap_frames(1):bootstrap_frames(2) 
-        img = rgb2gray(imread([malaga_path ...
-            '/malaga-urban-dataset-extract-07_rectified_800x600_Images/' ...
-            left_images(i+1).name]));
-        imgs = [imgs;{img}];
-    end
+    bootstrap_frames = [0,3]; 
+    img0 = rgb2gray(imread([malaga_path ...
+        '/malaga-urban-dataset-extract-07_rectified_800x600_Images/' ...
+        left_images(bootstrap_frames(1)).name]));
+    img1 = rgb2gray(imread([malaga_path ...
+        '/malaga-urban-dataset-extract-07_rectified_800x600_Images/' ...
+        left_images(bootstrap_frames(2)).name]));
+
+ 
 
 elseif ds == 2
-    imgs = [];
     bootstrap_frames = [0,3];
-    for i=bootstrap_frames(1):bootstrap_frames(2) 
-        img = rgb2gray(imread([parking_path ...
-            sprintf('/images/img_%05d.png',i)]));
-        imgs = [imgs;{img}];
-    end
+    img0 = rgb2gray(imread([parking_path ...
+        sprintf('/images/img_%05d.png',bootstrap_frames(1))]));
+    img1 = rgb2gray(imread([parking_path ...
+        sprintf('/images/img_%05d.png',bootstrap_frames(2))]));
 else
     assert(false);
 end
 
 %Bootstrapping 
-[S, success] = bootstrap(imgs,K,1,[]);
+[S, success] = bootstrap(img0,img1,K,1,[]);
 
 if(~success)
     disp('Initialization not successfull!')
@@ -93,7 +92,6 @@ if (debug == true)
 end
 
 %% Continuous operation
-img1 = cell2mat(imgs(end));
 close all
 range = (bootstrap_frames(2)+1):last_frame;
 % possible only take every xth frame (right now every second)
@@ -169,22 +167,36 @@ for i = range
     land_hist(20)= size(S.t1.X,1);
     
     if(size(S.t1.X,1)<30 && new_boot==0)
-        imgs=[];
-        for j=i-1:i+2 
-            if(ds==0)
-                img = imread([kitti_path '/00/image_0/' ...
-                sprintf('%06d.png',j)]);
-            elseif(ds==1)
-                img = rgb2gray(imread([malaga_path ...
-                '/malaga-urban-dataset-extract-07_rectified_800x600_Images/' ...
-                left_images(j).name]));
-            elseif(ds==2)
-                img = im2uint8(rgb2gray(imread([parking_path ...
-                sprintf('/images/img_%05d.png',j)])));
-            end
-            imgs = [imgs;{img}];
+        success = 0;
+        if(ds==0)
+            img0 = imread([kitti_path '/00/image_0/' ...
+            sprintf('%06d.png',i)]);
+        elseif(ds==1)
+            img0 = rgb2gray(imread([malaga_path ...
+            '/malaga-urban-dataset-extract-07_rectified_800x600_Images/' ...
+            left_images(i).name]));
+        elseif(ds==2)
+            img0 = im2uint8(rgb2gray(imread([parking_path ...
+            sprintf('/images/img_%05d.png',i)])));       
         end
-        [S, success] = bootstrap(imgs,K,0,S);
+        while(success==0)
+            i=i+3;
+            
+            if(ds==0)
+                img1 = imread([kitti_path '/00/image_0/' ...
+                sprintf('%06d.png',i)]);
+            elseif(ds==1)
+                img1 = rgb2gray(imread([malaga_path ...
+                '/malaga-urban-dataset-extract-07_rectified_800x600_Images/' ...
+                left_images(i).name]));
+            elseif(ds==2)
+                img1 = im2uint8(rgb2gray(imread([parking_path ...
+                sprintf('/images/img_%05d.png',i)])));       
+            end
+            
+            [S, success] = bootstrap(imgs,K,0,S);
+            running = success;
+        end
         new_boot=1;
     else
         new_boot=0;

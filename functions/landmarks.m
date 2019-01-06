@@ -6,11 +6,18 @@ function [p0,p1,X,running] = landmarks(S,p0,p1,Pose_0)
     global Confidence
     
     %Calculate Fundamental matrix and inliers
-    [F,inliersIndex,status] = estimateFundamentalMatrix(p0,...
-    p1,'Method','RANSAC',...
-    'NumTrials',NumTrials,'DistanceThreshold',DistanceThreshold,...
-    'InlierPercentage',InlierPercentage);
-
+    try
+        [F,inliersIndex,status] = estimateFundamentalMatrix(p0,...
+        p1,'Method','RANSAC',...
+        'NumTrials',NumTrials,'DistanceThreshold',DistanceThreshold,...
+        'InlierPercentage',InlierPercentage);
+    catch
+        p0=[];
+        p1=[];
+        X = [];
+        running = 0;
+        return
+    end
     inlierpercentage = length(find(inliersIndex>0))/length(p0);
     
     S.t1.P=S.t1.P(inliersIndex,:);
