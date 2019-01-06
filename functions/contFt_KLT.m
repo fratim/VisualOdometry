@@ -28,8 +28,9 @@ function S = contFt_KLT(S,img)
     end
     
     % add new keypoints
-    kpt_new_needed = 20;
-    if(length(S.t1.P)<150)
+    kpt_new_needed = 50;
+    
+    if(length(S.t1.P)<250)
         kpt_new_needed = 150;
     end
     
