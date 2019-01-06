@@ -121,7 +121,7 @@ function S = contFt_KLT(S,img)
                 alpha = acos((a*a -b*b -c*c)/(-2*b*c));
 
                 %Add features that fulfill criterium
-                if(abs(alpha)>MinAngle || critical==1)
+                if(abs(alpha)>MinAngle )
                     newP = [newP;p2(j,:)]; % flip to get u v
                     newX = [newX;X(j,:)];
                     newQuality = [newQuality; double(kp_quality(j))];
