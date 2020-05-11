@@ -1,4 +1,4 @@
-# Visual Odometry Pipeline (Patrick Pfreundschuh & Tim Franzmeyer)
+# Visual Odometry Pipeline
 
 To run the visual odometry pipeline only a few steps are needed:
 
